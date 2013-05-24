@@ -2,7 +2,7 @@
   "use strict";
   var mongoose = require('mongoose')
     , crudUtils = require('../utils/crudUtils')
-    , post = mongoose.model('Post')
+    , url = mongoose.model('URL')
     , users = require('../app/controller/users')
 
   function index(req, res) {
@@ -19,6 +19,6 @@
     app.get('/logout', users.logout)
     app.post('/users', users.create)
     app.post('/users/session', passport.authenticate('local', {failureRedirect: '/login', failureFlash: 'Invalid email or password.'}), users.session)
-    crudUtils.initRoutesForModel({ 'app': app, 'model': post, auth: auth });
+    crudUtils.initRoutesForModel({ 'app': app, 'model': url, auth: auth });
   };
 }(exports));

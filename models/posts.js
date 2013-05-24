@@ -1,7 +1,8 @@
 var mongoose = require('mongoose')
-    Schema = mongoose.Schema;
+  Schema = mongoose.Schema;
    postsSchema = new mongoose.Schema({
-        title: { 'type': String, 'default': 'empty title...' }
+         url: { 'type': String ,'default': ''}
+       , location: { 'type': String, 'default': '' }
        , body: { 'type': String, 'default': 'empty post...' }
        , createdAt : {type : Date, default : Date.now}
        , user  : { type : Schema.ObjectId, ref : 'User' } 
@@ -22,4 +23,4 @@ var mongoose = require('mongoose')
   }
 }
 
-module.exports = mongoose.model('Post', postsSchema);
+module.exports = mongoose.model('URL', postsSchema);

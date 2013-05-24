@@ -16,8 +16,10 @@ $(function ($, _, Backbone) {
     // Default attributes for the todo item.
     defaults: function () {
       return {
-        title: "empty post...",
-        done: false
+          title: ""
+        , done: false
+        , url : ""
+        , createdAt:new Date()
       };
     },
 
@@ -44,7 +46,7 @@ $(function ($, _, Backbone) {
     model: Post,
     // Note that url may also be defined as a function.
     url: function () {
-      return "/post" + ((this.id) ? '/' + this.id : '');
+      return "/url" + ((this.id) ? '/' + this.id : '');
     },
   });
 
@@ -68,7 +70,7 @@ $(function ($, _, Backbone) {
        "click .toggle"   : "toggleDone",
        "click .edit"  : "edit",
        "click a.destroy" : "clear",
-        "click .submit-update"  : "update",
+       "click .submit-update"  : "update",
     },
 
     // The TodoView listens for changes to its model, re-rendering. Since there's
@@ -144,11 +146,16 @@ $(function ($, _, Backbone) {
     initialize: function () {
       this.inputTitle = this.$("#new-post-title");
       this.inputBody = this.$("#new-post-body");
+      this.inputUrl = this.$("#new-post-url");
+
+
       Posts.bind('add', this.addOne, this);
       Posts.bind('reset', this.addAll, this);
       Posts.bind('all', this.render, this);
       //this.footer = this.$('footer');
       this.main = $('#main');
+
+      $(window).on("drop")
 
       Posts.fetch();
     },
@@ -183,7 +190,13 @@ $(function ($, _, Backbone) {
       create();
     },
     create:function(){
-      Posts.create({title: this.inputTitle.val(),body: this.inputBody.val(), myPost:true, user: {username:"jeffj"}});
+      Posts.create({
+          title: this.inputTitle.val()
+          , body: this.inputBody.val()
+          , myPost: true
+          , url: this.inputUrl.val()
+          , user: {username:"jeffj"}
+        });
       this.inputTitle.val('');
       this.inputBody.val('');
     }
