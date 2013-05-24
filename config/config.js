@@ -5,7 +5,7 @@ module.exports = {
       app: {
         name: 'Nodejs Express Mongoose Demo'
       },
-      db: 'mongodb://localhost/backbone_passport',
+      db: 'mongodb://localhost/tabkill',
       facebook: {
           clientID: "APP_ID"
         , clientSecret: "APP_SECRET"
