@@ -4,6 +4,8 @@
  */
 
 (function (exports) {
+  var parseUtils = require("./parseUtils.js")
+  //console.log(parseUtils.parser)
   "use strict";
   function errMsg(msg) {
     return {'error': {'message': msg.toString()}};
@@ -50,15 +52,17 @@
       //console.log('create', req.user._id);
       var m = new model(req.body);
       m.user=req.user._id
-      m.save(function (err) {
-        if (!err) {
-          var sender=m.toJSON()
-          sender.user={username:req.user.username}
-          res.send(sender);
-        } else {
-          res.send(errMsg(err));
-        }
-      });
+      parseUtils.parser(m["url"],function(err){
+        m.save(function (err) {
+          if (!err) {
+            var sender=m.toJSON()
+            sender.user={username:req.user.username}
+            res.send(sender);
+          } else {
+            res.send(errMsg(err));
+          }
+        });
+      });//parseUtils
     };
   }
 
@@ -87,15 +91,16 @@
           if ("user"!=key)  //ignore the user key
           result[key] = req.body[key];
         }
-        result.save(function (err) {
-          if (!err) {
-            var sender=result.toObject()
-            if (req.user.username) sender.user={username:req.user.username};
-            res.send(sender);
-          } else {
-            res.send(errMsg(err));
-          }
-        });
+        if (typeof result["url"]=="string")
+          result.save(function (err) {
+            if (!err) {
+              var sender=result.toObject()
+              if (req.user.username) sender.user={username:req.user.username};
+              res.send(sender);
+            } else {
+              res.send(errMsg(err));
+            }
+          });
     };
   }
   //------------------------------
@@ -116,7 +121,7 @@
   }
   function postid(req, res, next, id){
     var mongoose = require('mongoose'),
-    Post = mongoose.model('Post');
+    Post = mongoose.model('URL');
     Post.load(id, function (err, post) {
       if (err) return next(err)
       if (!post) return next(new Error('Failed to load article ' + id))
