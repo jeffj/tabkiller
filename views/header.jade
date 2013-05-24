@@ -1,15 +1,12 @@
 header
-  if (typeof username=="undefined")
-   a(href="/") Home 
-   a(href="/login") Login 
-   | &nbsp;
-   a(href="/signup") Signup
-  else
-   span=username
-   | &nbsp;
-   a(href="/logout") logout
-  .top-right
-   | Made with Love
-   br
-   | @
-   a( href="http://sfdevlabs.com") SFDevLabs
+  |Tab Killer
+  .header-control
+      if (typeof username=="undefined")
+       a(href="/") Home 
+       a(href="/login") Login 
+       | &nbsp;
+       a(href="/signup") Signup
+      else
+       span=username
+       | &nbsp;
+       a(href="/logout") logout
