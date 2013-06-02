@@ -52,7 +52,10 @@
       //console.log('create', req.user._id);
       var m = new model(req.body);
       m.user=req.user._id
-      parseUtils.parser(m["url"],function(err){
+      parseUtils.parser(m["url"],function(err, respObj){
+        console.log(respObj)
+        m.title=respObj.title
+        m.favicon=respObj.favicon
         m.save(function (err) {
           if (!err) {
             var sender=m.toJSON()

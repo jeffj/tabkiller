@@ -1,7 +1,10 @@
 extends layout
 block styles
   link(rel='stylesheet', href='/stylesheets/todos.css')
+  link(rel='stylesheet', href='/stylesheets/font-awesome.css')
+  link(rel='stylesheet', href='/stylesheets/jquery.dropdown.css')
 block content
+    #cover
     #app
       .form-box
         if (typeof username!="undefined")
@@ -16,23 +19,34 @@ block content
               | Login to Post!
       section#main
         div#list
-  script
-    userid="#{userid}";
+
 
 block bodyscripts
+  script
+    username="#{username}";
   script#item-template(type="text/template")
     |<div class="view">
-    |  <div class="control-box">
+    |  <div class="dropdown dropdown-tip">
+    |  <ul class="dropdown-menu">
     |  <% if (myPost == true) { %>
-    |  <a class="edit" href="javascript:null;" class="destroy">&#9998;</a>
-    |  <a class="destroy" href="javascript:null;" class="destroy">&#10006;</a>
+    |  <li> <a class="edit" href="javascript:null;" class="destroy"><i class="icon-edit"></i></a></li>
+    |  <li> <a class="destroy" href="javascript:null;" class="destroy"><i class="icon-remove"></i> </a> </li>
     |  <% } %>
+    |  </ul>
     |  </div>  
     |  <input class="title-edit">
     |  <div class="body"> <%= body %> </div>
     |  <textarea class="body-edit"> <%= title %> </textarea>
-    |  <div> <%= url %> </div>
     |  <a href="javascript:null;" class="submit-update">Update</a>
-    |  <div> <%= timeAgo %> </div>  
+    |  <% if (favicon) { %>
+    |  <img class="icon" src="<%= favicon %>">  </img>  
+    |  <% } else { %>
+    |  <i class="icon-file icon"></i>
+    |  <% } %>
+    |  <div class="title" >&nbsp;&nbsp;<span><%= title %> </span> </div> 
+    |  <a href="<%= url %>"><i class="icon-external-link"></i></i><a/>
+    |  <span> | <%= timeAgo %> </span>  
+    |  <span> | <%= user.username %> |  </span>  
+    |  <a class="menu"href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
     |</div>
   script(type="text/javascript", src="javascripts/todos.js")

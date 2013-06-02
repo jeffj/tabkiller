@@ -1,3 +1,8 @@
+var holder = window//document.getElementById('holder');
+holder.ondragover = function () { this.className = 'hover'; return false; };
+holder.ondragend = function () { this.className = ''; return false; };
+holder.ondrop = function (e) { e.preventDefault(); return false; };
+
 $(function ($, _, Backbone) {
 
   "use strict";
@@ -20,6 +25,7 @@ $(function ($, _, Backbone) {
         , done: false
         , url : ""
         , createdAt:new Date()
+        , favicon: ""
       };
     },
 
@@ -71,8 +77,19 @@ $(function ($, _, Backbone) {
        "click .edit"  : "edit",
        "click a.destroy" : "clear",
        "click .submit-update"  : "update",
+       "click .menu" : "menu"
     },
+    menu:function(e){
+      var that=this;
+      that.flag=false;
+      this.dropdown.css({"display":"inline-block", "position":"absolute","left":$(event.target).position().left, "top":$(event.target).position().top+$(event.target).height()})
+      $(window).bind("click", function(){
+        if (that.flag==false) { that.flag=true; return false }
 
+        that.dropdown.css({"display":"none"})
+        $(this).unbind("click");
+      })
+    },
     // The TodoView listens for changes to its model, re-rendering. Since there's
     // a one-to-one correspondence between a **Todo** and a **TodoView** in this
     // app, we set a direct reference on the model for convenience.
@@ -89,6 +106,12 @@ $(function ($, _, Backbone) {
       this.input = this.$('.edit');
       this.bodyEdit = this.$(".title-edit")
       this.titleEdit = this.$(".body-edit")
+      this.dropdown=this.$(".dropdown")
+      this.menu=this.$(".menu")
+
+
+
+      //this.controlBox.dropdown('method', );
       return this;
     },
 
@@ -129,6 +152,7 @@ $(function ($, _, Backbone) {
     // Instead of generating a new element, bind to the existing skeleton of
     // the App already present in the HTML.
     el: $("#app"),
+    username:username,
     // Our template for the line of statistics at the bottom of the app.
 
     // Delegated events for creating new items, and clearing completed ones.
@@ -147,16 +171,12 @@ $(function ($, _, Backbone) {
       this.inputTitle = this.$("#new-post-title");
       this.inputBody = this.$("#new-post-body");
       this.inputUrl = this.$("#new-post-url");
-
-
       Posts.bind('add', this.addOne, this);
       Posts.bind('reset', this.addAll, this);
       Posts.bind('all', this.render, this);
       //this.footer = this.$('footer');
       this.main = $('#main');
-
       $(window).on("drop")
-
       Posts.fetch();
     },
 
@@ -191,14 +211,13 @@ $(function ($, _, Backbone) {
     },
     create:function(){
       Posts.create({
-          title: this.inputTitle.val()
+            title: this.inputUrl.val()
           , body: this.inputBody.val()
           , myPost: true
           , url: this.inputUrl.val()
-          , user: {username:"jeffj"}
+          , user: {username:this.username}
         });
-      this.inputTitle.val('');
-      this.inputBody.val('');
+      this.inputUrl.val("")
     }
     // toggleAllComplete: function () {
     //   var done = this.allCheckbox.checked;
@@ -209,5 +228,13 @@ $(function ($, _, Backbone) {
 
   // Finally, we kick things off by creating the **App**.
   App = new AppView();
+
+  $(window).on("drop", function(e){
+    var text=e.originalEvent.dataTransfer.getData('Text');
+    if (text)
+    $("#new-post-url").val(text),
+    App.create();
+
+  });
 
 }(jQuery, _, Backbone));

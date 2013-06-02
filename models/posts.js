@@ -6,6 +6,9 @@ var mongoose = require('mongoose')
        , body: { 'type': String, 'default': 'empty post...' }
        , createdAt : {type : Date, default : Date.now}
        , user  : { type : Schema.ObjectId, ref : 'User' } 
+       , title: { 'type': String ,'default': ''}
+       , favicon: { 'type': String ,'default': ''}
+
   });
 
    postsSchema.statics = {
