@@ -5,6 +5,8 @@
 
 (function (exports) {
   var parseUtils = require("./parseUtils.js")
+    , mongoose = require('mongoose')
+    , block = mongoose.model('block')
   //console.log(parseUtils.parser)
   "use strict";
   function errMsg(msg) {
@@ -15,7 +17,6 @@
   //
   function getListController(model) {
     return function (req, res) {
-      //console.log('list', req.body);
       model
         .find({})
         .populate("user", "username")
@@ -50,22 +51,29 @@
   function getCreateController(model) {
     return function (req, res) {
       //console.log('create', req.user._id);
-      var m = new model(req.body);
+      var m = new model(req.body), blockObj;
       m.user=req.user._id
-      parseUtils.parser(m["url"],function(err, respObj){
-        console.log(respObj)
-        m.title=respObj.title
-        m.favicon=respObj.favicon
-        m.save(function (err) {
-          if (!err) {
-            var sender=m.toJSON()
-            sender.user={username:req.user.username}
-            res.send(sender);
-          } else {
-            res.send(errMsg(err));
-          }
-        });
-      });//parseUtils
+      if (!m.block) blockObj=new block(); else blockObj=m.block;
+      blockObj.save(function(err){
+        console.log(err)
+        m.block=blockObj;
+        parseUtils.parser(m["url"],function(err, respObj){
+          m.title=respObj.title
+          m.favicon=respObj.favicon
+          console.log(m)
+
+          m.save(function (err) {
+            if (!err) {
+              var sender=m.toJSON()
+              sender.user={username:req.user.username}
+              res.send(sender);
+            } else {
+              res.send(errMsg(err));
+            }
+          });
+        });//parseUtils
+      });//block save
+
     };
   }
 
@@ -123,8 +131,7 @@
     };
   }
   function postid(req, res, next, id){
-    var mongoose = require('mongoose'),
-    Post = mongoose.model('URL');
+    Post = mongoose.model('bookmark');
     Post.load(id, function (err, post) {
       if (err) return next(err)
       if (!post) return next(new Error('Failed to load article ' + id))

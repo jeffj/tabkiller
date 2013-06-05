@@ -18,14 +18,14 @@ block content
             a(href="/login")
               | Login to Post!
       section#main
-        div#list
-
+        ul#list
 
 block bodyscripts
   script
     username="#{username}";
   script#item-template(type="text/template")
     |<div class="view">
+    |  <span><%= block %> </span>
     |  <div class="dropdown dropdown-tip">
     |  <ul class="dropdown-menu">
     |  <% if (myPost == true) { %>
@@ -48,5 +48,8 @@ block bodyscripts
     |  <span> | <%= timeAgo %> </span>  
     |  <span> | <%= user.username %> |  </span>  
     |  <a class="menu"href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
+    |</div>
+  script#block-template(type="text/template")
+    |<ul class="block-view">
     |</div>
   script(type="text/javascript", src="javascripts/todos.js")

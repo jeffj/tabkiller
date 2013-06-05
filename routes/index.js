@@ -2,7 +2,7 @@
   "use strict";
   var mongoose = require('mongoose')
     , crudUtils = require('../utils/crudUtils')
-    , url = mongoose.model('URL')
+    , url = mongoose.model('bookmark')
     , users = require('../app/controller/users')
 
   function index(req, res) {

@@ -7,7 +7,7 @@ $(function ($, _, Backbone) {
 
   "use strict";
 
-  var Post, PostList, Posts, PostView, AppView, App;
+  var Post, Block, PostList, BlockList, Posts, Blocks, PostView, BlockView, AppView, App;
 
   // Post Model
   // ----------
@@ -22,6 +22,7 @@ $(function ($, _, Backbone) {
     defaults: function () {
       return {
           title: ""
+        , block: null
         , done: false
         , url : ""
         , createdAt:new Date()
@@ -43,6 +44,12 @@ $(function ($, _, Backbone) {
     }
   });
 
+  Block = Backbone.Model.extend({
+      idAttribute: "_id",
+      sync: function () { return false; }
+
+  })
+
   // Todo Collection
   // ---------------
 
@@ -52,15 +59,39 @@ $(function ($, _, Backbone) {
     model: Post,
     // Note that url may also be defined as a function.
     url: function () {
-      return "/url" + ((this.id) ? '/' + this.id : '');
+      return "/bookmark" + ((this.id) ? '/' + this.id : '');
     },
   });
 
   // Create our global collection of **Todos**.
   Posts = new PostList();
 
+    // Reference to this collection's model.
+  BlockList = Backbone.Collection.extend({
+
+    // Reference to this collection's model.
+    model: Block,
+    // Note that url may also be defined as a function.
+    // url: function () {
+    //   return "/bookmark" + ((this.id) ? '/' + this.id : '');
+    // },
+  });
+
+  // Create our global collection of **Todos**.
+  Blocks = new BlockList();
+
   // Todo Item View
   // --------------
+  BlockView = Backbone.View.extend({
+    tagName:  "li",
+    template: _.template($('#block-template').html()),
+    
+    render: function () {
+      this.$el.html(this.template());
+      return this;
+    }
+
+  });
 
   // The DOM element for a todo item...
   PostView = Backbone.View.extend({
@@ -146,6 +177,7 @@ $(function ($, _, Backbone) {
   // The Application
   // ---------------
 
+
   // Our overall **AppView** is the top-level piece of UI.
   AppView = Backbone.View.extend({
 
@@ -171,6 +203,7 @@ $(function ($, _, Backbone) {
       this.inputTitle = this.$("#new-post-title");
       this.inputBody = this.$("#new-post-body");
       this.inputUrl = this.$("#new-post-url");
+    //  Blocks.bind('add', this.addBlock, this);
       Posts.bind('add', this.addOne, this);
       Posts.bind('reset', this.addAll, this);
       Posts.bind('all', this.render, this);
@@ -194,8 +227,38 @@ $(function ($, _, Backbone) {
     // Add a single post item to the list by creating a view for it, and
     // appending its element to the `<ul>`.
     addOne: function (post) {
-      var view = new PostView({model: post});
-      $("#list").prepend(view.render().el);
+      var view, block; 
+      view = new PostView({model: post});
+      console.log(post.get("block"))
+
+      block=App.findBlock(post.get("block"))
+      
+      $("ul.block-view",block).prepend(view.render().el);
+      $("#list").prepend(block) //view.render().el);//.
+    },
+    findBlock: function(blockId){
+      var view,el, id;
+
+      id=Blocks.where({block:blockId})
+
+      if (id.length)
+        el=id[0].get("el");
+      else
+        el=this.addBlock();
+      
+      return el
+      
+    },
+
+
+    addBlock: function(){
+      var block = new Block({block:"1"});
+      var blockview= new BlockView({mode:block});
+      var render=blockview.render().el;
+      block.set({el:render});
+      block.save();
+      Blocks.add(block);
+      return render
     },
 
     // Add all items in the **Todos** collection at once.
