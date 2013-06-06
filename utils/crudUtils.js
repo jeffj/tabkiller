@@ -7,6 +7,8 @@
   var parseUtils = require("./parseUtils.js")
     , mongoose = require('mongoose')
     , block = mongoose.model('block')
+    , urlModel = mongoose.model('url');
+
   //console.log(parseUtils.parser)
   "use strict";
   function errMsg(msg) {
@@ -45,34 +47,97 @@
     };
     return result
   }
+
+
+  function findURLObj(url, cb){
+    urlParseObj=parseUri(url);
+    parsedURL=urlParseObj.domain+urlParseObj.path.replace(/\/$/g, '');
+    urlModel.findOne(parsedURL, function(err, responseURL){
+      if (err) cb(err, null);   
+      var urlObj;
+      if (responseURL==null)
+       urlObj = new urlModel({url:parsedURL}), urlObjCB=function(cb){ urlObj.save(cb(err))};
+      else
+       urlObj = responseURL, urlObjCB=function(cb){ cb(null) };
+
+      urlObjCB(function(err){
+        if(err) return err;
+        cb(null, urlObj, urlParseObj.source);
+
+      });
+
+
+
+      
+    });  
+  }
+
+  function parseUri(sourceUri){
+    var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"],
+      uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri),
+      uri = {};
+    
+    for(var i = 0; i < 10; i++){
+      uri[uriPartNames[i]] = (uriParts[i] ? uriParts[i] : "");
+    }
+    
+    /* Always end directoryPath with a trailing backslash if a path was present in the source URI
+    Note that a trailing backslash is NOT automatically inserted within or appended to the "path" key */
+    if(uri.directoryPath.length > 0){
+      uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
+    }
+    
+    return uri;
+  };
+
+
   //------------------------------
   // Create
   //
   function getCreateController(model) {
     return function (req, res) {
       //console.log('create', req.user._id);
-      var m = new model(req.body), blockObj;
+      var m = new model(req.body), blockObj, blockObjCB;
+     
       m.user=req.user._id
-      if (!m.block) blockObj=new block(); else blockObj=m.block;
-      blockObj.save(function(err){
-        console.log(err)
+      if (!m.block) blockObj=new block(), blockObjCB=function(cb){ blockObj.save(cb())};
+      else blockObj=m.block, blockObjCB=function(cb){cb()};
+      
+      blockObjCB(function(err){
         m.block=blockObj;
-        parseUtils.parser(m["url"],function(err, respObj){
-          m.title=respObj.title
-          m.favicon=respObj.favicon
-          console.log(m)
 
-          m.save(function (err) {
-            if (!err) {
-              var sender=m.toJSON()
-              sender.user={username:req.user.username}
-              res.send(sender);
-            } else {
-              res.send(errMsg(err));
-            }
-          });
-        });//parseUtils
-      });//block save
+        findURLObj(req.body.url, function(err, urlObj, sourceURL){
+
+            // return
+            console.log(urlObj)
+
+            m["urlObj"]=urlObj;
+
+
+            parseUtils.parser(sourceURL, function(err, respObj){
+
+
+              m.title=respObj.title
+              m.favicon=respObj.favicon
+
+              m.save(function (err) {
+
+                if (!err) {
+                  var sender=m.toJSON()
+                  sender.user={username:req.user.username}
+                  res.send(sender);
+                } else {
+
+                  res.send(errMsg(err));
+                }
+              });
+            });//parseUtils
+
+
+          });//block save
+
+
+        })//findURLObj
 
     };
   }
