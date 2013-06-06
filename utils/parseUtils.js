@@ -8,6 +8,7 @@ var httpParse = require('http')
 exports.parser=function(url, cb){
 //  urlObj=urlFormate(url)// ,function(err, urlObj){
 
+
   urlRequest(url, function(err, response, header){
 
     textScape(response, function(err, window){
@@ -21,6 +22,7 @@ exports.parser=function(url, cb){
        // urlFaviObj.subDomain=null  //scrape out the sub domain
       }
 
+
       //console.log(urlFaviObj)
 
       //console.log(urlFaviObj.subDomain)
@@ -32,6 +34,8 @@ exports.parser=function(url, cb){
           // favicon=+urlFaviObj.hostName+"/favicon.ico";
         }else
           favicon=null;
+
+
 
         cb(null, {title:title, favicon:favicon});
 
@@ -48,8 +52,12 @@ exports.parser=function(url, cb){
 
 urlRequest=function(url, callback){
 
+
   request(url, function (error, response, body) {
+
     if (!error && (response.statusCode == 200 || response.statusCode == 304) ) {
+
+
       //console.log(body) // Print the google web page.
 
       callback(null, body, response.headers)
