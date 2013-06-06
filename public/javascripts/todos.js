@@ -59,7 +59,8 @@ $(function ($, _, Backbone) {
     model: Post,
     // Note that url may also be defined as a function.
     url: function () {
-      return "/bookmark" + ((this.id) ? '/' + this.id : '');
+      return "/bookmark"+ ((this.id) ? '/' + this.id : '')+ ((block) ? '?block=' + block : '');
+      // + ((this.id) ? '/' + this.id : '');
     },
   });
 
@@ -87,7 +88,7 @@ $(function ($, _, Backbone) {
     template: _.template($('#block-template').html()),
     
     render: function () {
-      this.$el.html(this.template());
+      this.$el.html(this.template( this.model.toJSON() ));
       return this;
     }
 
@@ -241,7 +242,7 @@ $(function ($, _, Backbone) {
     findBlock: function(blockId){
       var view,el, id;
 
-      id=Blocks.where({block:blockId})
+      id=Blocks.where({id:blockId})
 
       if (id.length)
         el=id[0].get("el");
@@ -254,8 +255,8 @@ $(function ($, _, Backbone) {
 
 
     addBlock: function(blockId){
-      var block = new Block({block:blockId});
-      var blockview= new BlockView({mode:block});
+      var block = new Block({id:blockId});
+      var blockview= new BlockView({model:block});
       var render=blockview.render().el;
       block.set({el:render});
       block.save();
