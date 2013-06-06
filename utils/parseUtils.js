@@ -2,12 +2,26 @@
 var httpParse = require('http')
    ,httpsParse = require('https')
    ,jsdom = require('jsdom')
-   ,request = require('request');
+   ,request = require('request')
+   , mongoose = require('mongoose')
+   , urlModel = mongoose.model('url');
 
 
-exports.parser=function(url, cb){
+exports.parser=function(url, urlObj, cb){
 //  urlObj=urlFormate(url)// ,function(err, urlObj){
 
+
+      //   if (responseURL==null)
+      //  urlObj = new urlModel({url:urlParseObj.source}),
+      //  urlObj.save(function(err){
+      //   if(err) return err;
+      //  cb(null, urlObj, urlParseObj.source);
+      //  });
+      // else
+  if (urlObj!=null){
+    cb(null, urlObj);
+    return    
+  }
 
   urlRequest(url, function(err, response, header){
 
@@ -22,10 +36,6 @@ exports.parser=function(url, cb){
        // urlFaviObj.subDomain=null  //scrape out the sub domain
       }
 
-
-      //console.log(urlFaviObj)
-
-      //console.log(urlFaviObj.subDomain)
       urlRequest(favicon, function(err, responseFavi, headerFavi){
 
         if ( headerFavi["content-type"].match(/image/i) ){
@@ -36,8 +46,11 @@ exports.parser=function(url, cb){
           favicon=null;
 
 
-
-        cb(null, {title:title, favicon:favicon});
+        urlObj=new urlModel({title:title, favicon:favicon})
+        urlObj.save(function(err){
+          if (err){ cb(err, null); return};
+          cb(null, urlObj);
+        });
 
 
       });

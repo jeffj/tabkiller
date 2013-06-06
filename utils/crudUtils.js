@@ -6,8 +6,10 @@
 (function (exports) {
   var parseUtils = require("./parseUtils.js")
     , mongoose = require('mongoose')
-    , block = mongoose.model('block')
-    , urlModel = mongoose.model('url');
+    , createUtils = require("./createUtils.js")
+    , post = mongoose.model('bookmark');
+
+
 
   //console.log(parseUtils.parser)
   "use strict";
@@ -19,9 +21,15 @@
   //
   function getListController(model) {
     return function (req, res) {
+      q={}
+      var block=req.param('block');
+      if (block) q.block=block;
+
+      //if (req.)
       model
-        .find({})
+        .find(q)
         .populate("user", "username")
+        .populate("urlObj")
         .sort("createdAt")
         .lean()
         .exec(function (err, result) {
@@ -44,51 +52,17 @@
         result[i].myPost=true;
       else
         result[i].myPost=false;
+
+      if(result[i].urlObj)
+        result[i].url=result[i].urlObj.url,
+        result[i].title=result[i].urlObj.title;
+        result[i].favicon=result[i].urlObj.favicon;
     };
     return result
   }
 
 
-  function findURLObj(url, cb){
-    urlParseObj=parseUri(url);
-    parsedURL=urlParseObj.domain+urlParseObj.path.replace(/\/$/g, '');
-    urlModel.findOne(parsedURL, function(err, responseURL){
-      if (err) cb(err, null);   
-      var urlObj;
-      if (responseURL==null)
-       urlObj = new urlModel({url:parsedURL}), urlObjCB=function(cb){ urlObj.save(cb(err))};
-      else
-       urlObj = responseURL, urlObjCB=function(cb){ cb(null) };
 
-      urlObjCB(function(err){
-        if(err) return err;
-        cb(null, urlObj, urlParseObj.source);
-
-      });
-
-
-
-      
-    });  
-  }
-
-  function parseUri(sourceUri){
-    var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"],
-      uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri),
-      uri = {};
-    
-    for(var i = 0; i < 10; i++){
-      uri[uriPartNames[i]] = (uriParts[i] ? uriParts[i] : "");
-    }
-    
-    /* Always end directoryPath with a trailing backslash if a path was present in the source URI
-    Note that a trailing backslash is NOT automatically inserted within or appended to the "path" key */
-    if(uri.directoryPath.length > 0){
-      uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
-    }
-    
-    return uri;
-  };
 
 
   //------------------------------
@@ -96,48 +70,39 @@
   //
   function getCreateController(model) {
     return function (req, res) {
-      //console.log('create', req.user._id);
-      var m = new model(req.body), blockObj, blockObjCB;
-     
-      m.user=req.user._id
-      if (!m.block) blockObj=new block(), blockObjCB=function(cb){ blockObj.save(cb())};
-      else blockObj=m.block, blockObjCB=function(cb){cb()};
-      
-      blockObjCB(function(err){
-        m.block=blockObj;
 
-        findURLObj(req.body.url, function(err, urlObj, sourceURL){
+      var m = new model(req.body), urlString=req.body.url;
 
-            // return
-            console.log(urlObj)
-
-            m["urlObj"]=urlObj;
+      createUtils.url(urlString, function(err, urlObj){
 
 
-            parseUtils.parser(sourceURL, function(err, respObj){
+            parseUtils.parser(urlString, urlObj, function(err, urlObj){
 
+              createUtils.block(req.body.block, function(err, blockObj){
 
-              m.title=respObj.title
-              m.favicon=respObj.favicon
+                m.urlObj=urlObj, m.block=blockObj,m.user=req.user;
 
-              m.save(function (err) {
+                m.save(function(err){
+                  if (!err) {
+                    var sender=m.toJSON()
+                    sender.user={username:req.user.username}
+                    sender.url=urlObj.url
+                    sender.title=urlObj.title
+                    sender.favicon=urlObj.favicon                
+                    res.send(sender);
+                  } else {
+                    res.send(errMsg(err));
+                  }
+                });
 
-                if (!err) {
-                  var sender=m.toJSON()
-                  sender.user={username:req.user.username}
-                  res.send(sender);
-                } else {
-
-                  res.send(errMsg(err));
-                }
-              });
+              });//createUtils.url
+           
             });//parseUtils
 
+          });//createUtils.url
 
-          });//block save
 
-
-        })//findURLObj
+       
 
     };
   }
@@ -196,8 +161,7 @@
     };
   }
   function postid(req, res, next, id){
-    Post = mongoose.model('bookmark');
-    Post.load(id, function (err, post) {
+    post.load(id, function (err, post) {
       if (err) return next(err)
       if (!post) return next(new Error('Failed to load article ' + id))
       req.post = post

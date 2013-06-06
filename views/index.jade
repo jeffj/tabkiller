@@ -10,8 +10,8 @@ block content
         if (typeof username!="undefined")
             .form-group.location
               input#new-post-url(type="text", placeholder="Add URL here")
-              
-              input#new-post-block(type="text", placeholder="Add id", style="display:none;")
+              br
+              input#new-post-block(type="text", placeholder="Add id", style="display")
 
               a.submit(href="javascript:null;")
                 | Submit              
@@ -20,15 +20,23 @@ block content
           .login-prompt
             a(href="/login")
               | Login to Post!
-      section#main
+      - var klass = (block ? 'block-url' : '')
+      section#main(class=klass)
+        .back-link
+          a(href="../") 
+            i.icon-arrow-left 
+            |back
+        a(href="javascript:null")
+          | New Bucket 
+          i.icon-plus
         ul#list
+
 
 block bodyscripts
   script
-    username="#{username}";
+    username="#{username}", block="#{block}";;
   script#item-template(type="text/template")
     |<div class="view">
-    |  <span><%= block %> </span>
     |  <div class="dropdown dropdown-tip">
     |  <ul class="dropdown-menu">
     |  <% if (myPost == true) { %>
@@ -53,6 +61,11 @@ block bodyscripts
     |  <a class="menu"href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
     |</div>
   script#block-template(type="text/template")
-    |<ul class="block-view">
+    |<div class="block-header">
+    |<a class="block-link" href="javascript:null;"> Add to Bucket <i class="icon-plus"></i> <i> </a>
+    ||&nbsp;
+    |<a class="block-link" href="<%= id %> "> view bucket <i class="icon-arrow-right"></i> <i> </a>
+    |</div>
+    |<ul class="block-view"></ul>
     |</div>
   script(type="text/javascript", src="javascripts/todos.js")
