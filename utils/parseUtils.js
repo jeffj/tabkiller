@@ -8,24 +8,21 @@ var httpParse = require('http')
 
 
 exports.parser=function(url, urlObj, cb){
-//  urlObj=urlFormate(url)// ,function(err, urlObj){
 
-
-      //   if (responseURL==null)
-      //  urlObj = new urlModel({url:urlParseObj.source}),
-      //  urlObj.save(function(err){
-      //   if(err) return err;
-      //  cb(null, urlObj, urlParseObj.source);
-      //  });
-      // else
   if (urlObj!=null){
     cb(null, urlObj);
     return    
   }
 
+
+
   urlRequest(url, function(err, response, header){
 
+
     textScape(response, function(err, window){
+
+
+
 
       var title, favicon;
       title=window.$("title").text()
@@ -36,6 +33,11 @@ exports.parser=function(url, urlObj, cb){
        // urlFaviObj.subDomain=null  //scrape out the sub domain
       }
 
+      if( favicon.slice(0, 1)=="/")
+        parsed=parseURI(url),
+        favicon=parsed.protocol+"://"+parsed.domain+favicon;
+    
+
       urlRequest(favicon, function(err, responseFavi, headerFavi){
 
         if ( headerFavi["content-type"].match(/image/i) ){
@@ -44,6 +46,7 @@ exports.parser=function(url, urlObj, cb){
           // favicon=+urlFaviObj.hostName+"/favicon.ico";
         }else
           favicon=null;
+
 
 
         urlObj=new urlModel({title:title, favicon:favicon})
@@ -88,6 +91,9 @@ urlRequest=function(url, callback){
   // );
 
 
+    }else{
+      callback(null, null, null)
+
     }
   });
 
@@ -127,56 +133,56 @@ urlRequest=function(url, callback){
 }
 
 
-urlFormate=function(url, callback){
-  var requestType, requestType, path, hostName, hostComp, subDomain, protocol;
-  if (url.search("https")!=-1){
-    urlHusk=url.split("https://")[1];
-    protocol="https://";
-    requestType=httpsParse;
-    port=443;
-    path=urlHusk.slice(urlHusk.search("/"));
-    hostName=urlHusk.slice(0,urlHusk.search("/"));
-    hostComp=hostName.slice(".")
-    if (hostComp.length==3)
-      hostName=hostComp[1]+"."+hostComp[2],
-      subDomain=hostComp[0];
+// urlFormate=function(url, callback){
+//   var requestType, requestType, path, hostName, hostComp, subDomain, protocol;
+//   if (url.search("https")!=-1){
+//     urlHusk=url.split("https://")[1];
+//     protocol="https://";
+//     requestType=httpsParse;
+//     port=443;
+//     path=urlHusk.slice(urlHusk.search("/"));
+//     hostName=urlHusk.slice(0,urlHusk.search("/"));
+//     hostComp=hostName.slice(".")
+//     if (hostComp.length==3)
+//       hostName=hostComp[1]+"."+hostComp[2],
+//       subDomain=hostComp[0];
 
-  }
-  else if (url.search("http")!=-1){
-    var urlHusk=url.split("http://")[1];
-    protocol="http://";
-    requestType=httpParse;
-    port=80;
-    path=urlHusk.slice(urlHusk.search("/"));
-    hostName=urlHusk.slice(0,urlHusk.search("/"));
-    hostComp=hostName.split(".")
-    if (hostComp.length==3)
-      hostName=hostComp[1]+"."+hostComp[2],
-      subDomain=hostComp[0];
-  }
-  else{
-    var urlHusk, split;
-    split=url.split("//")
-    if (split[0].length) urlHusk=split[0];
-    else if (split[1].length) urlHusk=split[1];
-    protocol="http://";
-    requestType=httpParse;
-    port=80;
-    path=urlHusk.slice(urlHusk.search("/"));
-    hostName=urlHusk.slice(0,urlHusk.search("/"));
-    hostComp=hostName.split(".")
-    if (hostComp.length==3)
-      hostName=hostComp[1]+"."+hostComp[2],
-      subDomain=hostComp[0];
-
-
+//   }
+//   else if (url.search("http")!=-1){
+//     var urlHusk=url.split("http://")[1];
+//     protocol="http://";
+//     requestType=httpParse;
+//     port=80;
+//     path=urlHusk.slice(urlHusk.search("/"));
+//     hostName=urlHusk.slice(0,urlHusk.search("/"));
+//     hostComp=hostName.split(".")
+//     if (hostComp.length==3)
+//       hostName=hostComp[1]+"."+hostComp[2],
+//       subDomain=hostComp[0];
+//   }
+//   else{
+//     var urlHusk, split;
+//     split=url.split("//")
+//     if (split[0].length) urlHusk=split[0];
+//     else if (split[1].length) urlHusk=split[1];
+//     protocol="http://";
+//     requestType=httpParse;
+//     port=80;
+//     path=urlHusk.slice(urlHusk.search("/"));
+//     hostName=urlHusk.slice(0,urlHusk.search("/"));
+//     hostComp=hostName.split(".")
+//     if (hostComp.length==3)
+//       hostName=hostComp[1]+"."+hostComp[2],
+//       subDomain=hostComp[0];
 
 
-  }
-    return {protocol:protocol, port:port, hostName:hostName, path:path, requestType:requestType, subDomain:subDomain}
-  //callback(null, {port:port, hostname:hostname, path:path, requestType:requestType});
 
-}
+
+//   }
+//     return {protocol:protocol, port:port, hostName:hostName, path:path, requestType:requestType, subDomain:subDomain, }
+//   //callback(null, {port:port, hostname:hostname, path:path, requestType:requestType});
+
+// }
 
 
 
@@ -189,4 +195,22 @@ textScape=function(html, callback){
         callback(null, window)
       }
     );
-}
+};
+
+function parseURI(sourceUri){
+    var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"],
+      uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri),
+      uri = {};
+    
+    for(var i = 0; i < 10; i++){
+      uri[uriPartNames[i]] = (uriParts[i] ? uriParts[i] : "");
+    }
+    
+    /* Always end directoryPath with a trailing backslash if a path was present in the source URI
+    Note that a trailing backslash is NOT automatically inserted within or appended to the "path" key */
+    if(uri.directoryPath.length > 0){
+      uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
+    }
+    
+    return uri;
+  };

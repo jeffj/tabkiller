@@ -71,6 +71,8 @@
   function getCreateController(model) {
     return function (req, res) {
 
+        console.log("hit")
+
       var m = new model(req.body), urlString=req.body.url;
 
       createUtils.url(urlString, function(err, urlObj){
@@ -78,9 +80,13 @@
 
             parseUtils.parser(urlString, urlObj, function(err, urlObj){
 
+
+
               createUtils.block(req.body.block, function(err, blockObj){
 
                 m.urlObj=urlObj, m.block=blockObj,m.user=req.user;
+                console.log(urlObj)
+                console.log(blockObj)
 
                 m.save(function(err){
                   if (!err) {
