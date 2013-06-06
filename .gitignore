@@ -1,4 +1,4 @@
-public/stylesheets/*.css
+public/stylesheets/todos.css
 node_modules
 //git config --global core.excludesfile ~/.gitignore
 
