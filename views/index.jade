@@ -10,6 +10,9 @@ block content
         if (typeof username!="undefined")
             .form-group.location
               input#new-post-url(type="text", placeholder="Add URL here")
+              
+              input#new-post-block(type="text", placeholder="Add id", style="display:none;")
+
               a.submit(href="javascript:null;")
                 | Submit              
         else
