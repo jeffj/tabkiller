@@ -3,6 +3,9 @@ var mongoose = require('mongoose')
    urlSchema = new mongoose.Schema({
          url: { 'type': String ,'default': ''}
        , body: { 'type': String ,'default': ''}
+       , url: { 'type': String, 'default': '' }
+       , title: { 'type': String ,'default': ''}
+       , favicon: { 'type': String ,'default': ''}
   });
 
    bookmarkSchema.statics = {
@@ -13,15 +16,6 @@ var mongoose = require('mongoose')
    * @param {Function} cb
    * @api public
    */
-  findOne: function (url, cb) {
-    this.findOne({ url : url })
-    .exec(cb)
-  },
-  load: function (id, cb) {
-    this.findOne({ _id : id })
-      .populate('user', 'username')
-      .exec(cb)
-  }
 }
 
 module.exports = mongoose.model('url', urlSchema);

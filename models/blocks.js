@@ -12,11 +12,10 @@ var mongoose = require('mongoose')
    * @param {Function} cb
    * @api public
    */
-  // load: function (id, cb) {
-  //   this.findOne({ _id : id })
-  //     .populate('user', 'username')
-  //     .exec(cb)
-  // }
+  load: function (id, cb) {
+    this.findOne({ _id : id })
+      .exec(cb)
+  }
 }
 
 module.exports = mongoose.model('block',  blockSchema);
