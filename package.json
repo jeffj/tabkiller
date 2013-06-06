@@ -21,5 +21,8 @@
         , "passport-google-oauth": "latest"
         , "nodemon": "latest"
         , "underscore":"latest"
+        , "request": "latest"
+        , "jsdom": "latest"
+
     }
 }
