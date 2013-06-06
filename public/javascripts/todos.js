@@ -203,6 +203,8 @@ $(function ($, _, Backbone) {
       this.inputTitle = this.$("#new-post-title");
       this.inputBody = this.$("#new-post-body");
       this.inputUrl = this.$("#new-post-url");
+      this.inputBlock = this.$("#new-post-block");
+
     //  Blocks.bind('add', this.addBlock, this);
       Posts.bind('add', this.addOne, this);
       Posts.bind('reset', this.addAll, this);
@@ -244,15 +246,15 @@ $(function ($, _, Backbone) {
       if (id.length)
         el=id[0].get("el");
       else
-        el=this.addBlock();
+        el=this.addBlock(blockId);
       
       return el
       
     },
 
 
-    addBlock: function(){
-      var block = new Block({block:"1"});
+    addBlock: function(blockId){
+      var block = new Block({block:blockId});
       var blockview= new BlockView({mode:block});
       var render=blockview.render().el;
       block.set({el:render});
@@ -273,14 +275,17 @@ $(function ($, _, Backbone) {
       create();
     },
     create:function(){
+      var blockVal;
+      if (this.inputBlock.val()) blockVal=this.inputBlock.val(); else blockVal=null;
       Posts.create({
             title: this.inputUrl.val()
           , body: this.inputBody.val()
           , myPost: true
           , url: this.inputUrl.val()
           , user: {username:this.username}
+          , block : blockVal
         });
-      this.inputUrl.val("")
+     // this.inputUrl.val("")
     }
     // toggleAllComplete: function () {
     //   var done = this.allCheckbox.checked;
