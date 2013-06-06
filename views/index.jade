@@ -10,8 +10,7 @@ block content
         if (typeof username!="undefined")
             .form-group.location
               input#new-post-url(type="text", placeholder="Add URL here")
-              br
-              input#new-post-block(type="text", placeholder="Add id", style="display")
+              input#new-post-block(type="text", placeholder="Add id", style="display:none;")
 
               a.submit(href="javascript:null;")
                 | Submit              
@@ -26,9 +25,16 @@ block content
           a(href="../") 
             i.icon-arrow-left 
             |back
-        a(href="javascript:null")
+        a#new-bucket-link(href="javascript:null")
           | New Bucket 
           i.icon-plus
+        #new-bucket
+          .block-header
+            a
+              |view bucket
+              i.icon-arrow-right
+
+
         ul#list
 
 

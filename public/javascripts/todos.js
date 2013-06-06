@@ -86,10 +86,19 @@ $(function ($, _, Backbone) {
   BlockView = Backbone.View.extend({
     tagName:  "li",
     template: _.template($('#block-template').html()),
+
+    events: {
+       "click .block-link" : "bucketSelect",
+    },
     
     render: function () {
       this.$el.html(this.template( this.model.toJSON() ));
       return this;
+    },
+    bucketSelect:function(){
+      $("#new-post-block").val(this.model.get("id"))
+      $(".selected-bucket").removeClass("selected-bucket")
+      this.$el.addClass("selected-bucket");
     }
 
   });
@@ -213,6 +222,11 @@ $(function ($, _, Backbone) {
       //this.footer = this.$('footer');
       this.main = $('#main');
       $(window).on("drop")
+      $("#new-bucket-link").bind("click",function(){ 
+        $("#new-post-block").val("")
+        $(".selected-bucket").removeClass("selected-bucket")
+        $("#new-bucket").addClass("selected-bucket")
+      })
       Posts.fetch();
     },
 
@@ -232,12 +246,12 @@ $(function ($, _, Backbone) {
     addOne: function (post) {
       var view, block; 
       view = new PostView({model: post});
-      console.log(post.get("block"))
-
       block=App.findBlock(post.get("block"))
-      
+
       $("ul.block-view",block).prepend(view.render().el);
       $("#list").prepend(block) //view.render().el);//.
+      $(".block-link", block).click();//click the new bucket to focus it.
+
     },
     findBlock: function(blockId){
       var view,el, id;
@@ -286,7 +300,7 @@ $(function ($, _, Backbone) {
           , user: {username:this.username}
           , block : blockVal
         });
-     // this.inputUrl.val("")
+      this.inputUrl.val("")
     }
     // toggleAllComplete: function () {
     //   var done = this.allCheckbox.checked;
