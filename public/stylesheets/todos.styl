@@ -7,12 +7,25 @@ h1
 a
 	text-decoration none
 header
+	height 50px
+	border-bottom solid 1px #eee
 	.header-control
 		float right
+		padding 5px
+
+	.title
+		float left
+		font-size 30px
+		color #888
+		background-color #333
+		width 100px
+		padding 5px
+		border-radius 5px
+
 #app
 	max-width 1000px
 	min-width 700px
-	margin auto
+	margin 20px auto
 #main
     .back-link 
     	margin 10px 0px 0px
@@ -21,16 +34,25 @@ header
    	#list
    		padding 0px
 .block-header
+	height 1em
 	border-bottom 1px solid #eee
-	text-align right 
-	padding 2px 40px
+	padding 4px
+	margin 5px
+
 .back-link
 	display none
-.block-url
-	.block-link
-		display none
-	.back-link
-		display block
+
+.block-title
+	margin 0px
+
+.block-header-right
+	float right
+
+	.block-url
+		.block-link
+			display none
+		.back-link
+			display block
 
 #list>li
 	padding 2px

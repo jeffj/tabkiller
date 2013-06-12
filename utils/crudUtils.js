@@ -30,6 +30,7 @@
         .find(q)
         .populate("user", "username")
         .populate("urlObj")
+        .populate("block")
         .sort("createdAt")
         .lean()
         .exec(function (err, result) {
@@ -53,6 +54,10 @@
       else
         result[i].myPost=false;
 
+      if(result[i].block)
+        result[i].blocktitle=result[i].block.title,
+        result[i].blockid=String(result[i].block._id);
+
       if(result[i].urlObj)
         result[i].url=result[i].urlObj.url,
         result[i].title=result[i].urlObj.title;
@@ -70,9 +75,6 @@
   //
   function getCreateController(model) {
     return function (req, res) {
-
-        console.log("hit")
-
       var m = new model(req.body), urlString=req.body.url;
 
       createUtils.url(urlString, function(err, urlObj){
@@ -80,13 +82,9 @@
 
             parseUtils.parser(urlString, urlObj, function(err, urlObj){
 
-
-
               createUtils.block(req.body.block, function(err, blockObj){
 
                 m.urlObj=urlObj, m.block=blockObj,m.user=req.user;
-                console.log(urlObj)
-                console.log(blockObj)
 
                 m.save(function(err){
                   if (!err) {

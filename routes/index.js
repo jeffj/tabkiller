@@ -12,7 +12,7 @@
 
 
     res.render('index', { 
-        'title': 'Bulletin Board Demo'
+        'title': 'Pelican'
         , 'username':(req.user) ?  req.user.username: undefined
         , 'userid':(req.user) ?  req.user._id: undefined
         , block: blockId.length ? blockId: undefined

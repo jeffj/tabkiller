@@ -14,7 +14,7 @@ exports.parser=function(url, urlObj, cb){
     return    
   }
 
-
+  var parsed=parseURI(url)
 
   urlRequest(url, function(err, response, header){
 
@@ -34,13 +34,13 @@ exports.parser=function(url, urlObj, cb){
       }
 
       if( favicon.slice(0, 1)=="/")
-        parsed=parseURI(url),
         favicon=parsed.protocol+"://"+parsed.domain+favicon;
     
 
+
       urlRequest(favicon, function(err, responseFavi, headerFavi){
 
-        if ( headerFavi["content-type"].match(/image/i) ){
+        if ( headerFavi && headerFavi["content-type"].match(/image/i) ){
           // favicon=+urlFaviObj.protocol;
           // if (urlFaviObj.subDomain)favicon=+urlFaviObj.subDomain;
           // favicon=+urlFaviObj.hostName+"/favicon.ico";
@@ -49,7 +49,7 @@ exports.parser=function(url, urlObj, cb){
 
 
 
-        urlObj=new urlModel({title:title, favicon:favicon})
+        urlObj=new urlModel({title:title, favicon:favicon, url:parsed.source })
         urlObj.save(function(err){
           if (err){ cb(err, null); return};
           cb(null, urlObj);
@@ -92,7 +92,7 @@ urlRequest=function(url, callback){
 
 
     }else{
-      callback(null, null, null)
+      callback(null, null, response.headers)
 
     }
   });

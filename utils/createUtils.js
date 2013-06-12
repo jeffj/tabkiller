@@ -13,8 +13,6 @@ exports.url=function(url, cb){
 }
 
 exports.block=function(block, cb){
-
-
   blockModel.findOne({_id:block}, function(err, result){ 
    if (err){ cb(err, null); return};
       
@@ -29,7 +27,6 @@ exports.block=function(block, cb){
       });
     });
 }
-
 
 
 

@@ -27,6 +27,9 @@ $(function ($, _, Backbone) {
         , url : ""
         , createdAt:new Date()
         , favicon: ""
+        , blockid : null
+        , blocktitle : "add title here..."
+
       };
     },
 
@@ -46,7 +49,15 @@ $(function ($, _, Backbone) {
 
   Block = Backbone.Model.extend({
       idAttribute: "_id",
-      sync: function () { return false; }
+    //  sync: function () { return false; }
+    url: function () {
+      return "/block"+ ((this.id) ? '/' + this.id : '');
+    },
+    defaults: function () {
+      return {
+          title: ""
+      };
+    },
 
   })
 
@@ -59,7 +70,7 @@ $(function ($, _, Backbone) {
     model: Post,
     // Note that url may also be defined as a function.
     url: function () {
-      return "/bookmark"+ ((this.id) ? '/' + this.id : '')+ ((block) ? '?block=' + block : '');
+      return "/bookmark"+ ((this.id) ? '/' + this.id : '') + ((block) ? '?block=' + block : '');
       // + ((this.id) ? '/' + this.id : '');
     },
   });
@@ -246,35 +257,35 @@ $(function ($, _, Backbone) {
     addOne: function (post) {
       var view, block; 
       view = new PostView({model: post});
-      block=App.findBlock(post.get("block"))
+      block=App.findBlock( {title: post.get("blocktitle"), _id:post.get("blockid")} )
 
       $("ul.block-view",block).prepend(view.render().el);
       $("#list").prepend(block) //view.render().el);//.
       $(".block-link", block).click();//click the new bucket to focus it.
 
     },
-    findBlock: function(blockId){
+    findBlock: function(block){
       var view,el, id;
 
-      id=Blocks.where({id:blockId})
+      id=Blocks.where({id:block._id})
 
       if (id.length)
         el=id[0].get("el");
       else
-        el=this.addBlock(blockId);
+        el=this.addBlock(block);
       
       return el
       
     },
 
 
-    addBlock: function(blockId){
-      var block = new Block({id:blockId});
-      var blockview= new BlockView({model:block});
+    addBlock: function(block){
+      var blockModel = new Block({id: (block)? block._id : null ,title: (block)? block.title : null  });
+      var blockview= new BlockView({model:blockModel});
       var render=blockview.render().el;
-      block.set({el:render});
-      block.save();
-      Blocks.add(block);
+      blockModel.set({el:render});
+    //  block.save();
+      Blocks.add(blockModel);
       return render
     },
 
@@ -299,6 +310,8 @@ $(function ($, _, Backbone) {
           , url: this.inputUrl.val()
           , user: {username:this.username}
           , block : blockVal
+          , blockid : blockVal
+
         });
       this.inputUrl.val("")
     }
