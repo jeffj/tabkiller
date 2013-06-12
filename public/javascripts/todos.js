@@ -99,7 +99,7 @@ $(function ($, _, Backbone) {
     template: _.template($('#block-template').html()),
 
     events: {
-       "click .block-link" : "bucketSelect",
+       "click .bucket-select" : "bucketSelect",
     },
     
     render: function () {

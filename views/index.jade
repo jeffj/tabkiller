@@ -31,9 +31,6 @@ block content
             i.icon-plus
         #new-bucket
           .block-header            
-            a
-              |view bucket
-              i.icon-arrow-right
           .prompt
             | Add a URL above 
             br
@@ -75,7 +72,8 @@ block bodyscripts
   script#block-template(type="text/template")
     |<div class="block-header">
     |<div class="block-header-right">
-    |<a class="block-link" href="javascript:null;"> Select Bucket <i class="icon-plus"></i> </a>
+    |<a class="block-link bucket-select" href="javascript:null;"> select bucket <i class="icon-plus"></i> </a>
+    |<a class="block-link select-message"> <b>selected</b> </a>
     ||&nbsp;
     |<a class="block-link" href="<%= id %> "> view bucket <i class="icon-arrow-right"></i> </a>
     |</div>
