@@ -165,8 +165,6 @@
     };
   }
   function postid(req, res, next, id){
-    console.log(1)
-    return
     post.load(id, function (err, post) {
       if (err) return next(err)
       if (!post) return next(new Error('Failed to load article ' + id))
@@ -182,19 +180,12 @@
       path,
       pathWithId;
 
-
-
     if (!app || !model) {
       return;
     }
 
-
     path = options.path || '/' + model.modelName.toLowerCase();
     pathWithId = path + '/:idbook';
-
-    console.log(path)
-
-
     app.get(path, getListController(model));
     app.get(pathWithId, getReadController(model));
     app.post(path, auth.requiresLogin, getCreateController(model));

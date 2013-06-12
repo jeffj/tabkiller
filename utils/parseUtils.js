@@ -24,20 +24,14 @@ exports.parser=function(url, urlObj, cb){
 
 
 
-      var title, favicon;
-      title=window.$("title").text()
-      favicon=window.$("[rel='shortcut icon']").attr("href")
+      var title, favicon,titleJq;
+      titleJq=window.$("title").text(), title= ( titleJq )? titleJq: parsed.authority+parsed.path;
+      favicon=window.$("[rel='shortcut icon']").attr("href");
       if (typeof favicon!= "string") { 
         favicon=url.split("/")[0]+"//"+url.split("/")[2]+"/favicon.ico"  
-        //urlFaviObj=urlFormate(favicon)
-       // urlFaviObj.subDomain=null  //scrape out the sub domain
       }
-
       if( favicon.slice(0, 1)=="/")
         favicon=parsed.protocol+"://"+parsed.domain+favicon;
-    
-
-
       urlRequest(favicon, function(err, responseFavi, headerFavi){
 
         if ( headerFavi && headerFavi["content-type"].match(/image/i) ){
@@ -187,8 +181,9 @@ urlRequest=function(url, callback){
 
 
 textScape=function(html, callback){
+   console.log( (typeof html=="string")? html:"<body>" )
     jsdom.env(
-      html,
+      (typeof html=="string")? html:"<body>",
       ["http://code.jquery.com/jquery.js"],
       function(errors, window) {
         window.$("script").remove();

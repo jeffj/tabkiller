@@ -1,5 +1,6 @@
 body
   font-family Helvetica Neue
+  margin 15px
 button
   font-size 1.1em
 h1
@@ -24,7 +25,7 @@ header
 
 #app
 	max-width 1000px
-	min-width 700px
+	min-width 740px
 	margin 20px auto
 #main
     .back-link 
@@ -102,7 +103,7 @@ header
 .login-prompt
 	font-size 2em
 .view
-	margin 5px
+	padding 2px 2px
 	.icon
 		width 16px
 		float left
@@ -112,6 +113,10 @@ header
 		overflow: hidden;
 		width: 65%;
 		text-overflow ellipsis
+	.ext-link
+		visibility hidden
+.view:hover .ext-link
+	visibility visible
 #cover
 	opacity .5
 	width 100%

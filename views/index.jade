@@ -59,13 +59,15 @@ block bodyscripts
     |  <div class="body"> <%= body %> </div>
     |  <textarea class="body-edit"> <%= title %> </textarea>
     |  <a href="javascript:null;" class="submit-update">Update</a>
+    |  <a href="<%= url %>" target="_blank" >
     |  <% if (favicon) { %>
     |  <img class="icon" src="<%= favicon %>">  </img>  
     |  <% } else { %>
     |  <i class="icon-file icon"></i>
     |  <% } %>
+    |  </a>
     |  <div class="title" >&nbsp;&nbsp;<span><%= title %> </span> </div> 
-    |  <a target="_blank" href="<%= url %>"><i class="icon-external-link"></i></i><a/>
+    |  <a class="ext-link" target="_blank" href="<%= url %>"><i class="icon-external-link"></i></i><a/>
     |  <span> | <%= timeAgo %> </span>  
     |  <span> | <%= user.username %> |  </span>  
     |  <a class="menu" href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
