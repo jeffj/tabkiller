@@ -21,14 +21,15 @@ block content
               | Login to Post!
       - var klass = (block ? 'block-url' : '')
       section#main(class=klass)
-        .back-link
-          a(href="../") 
-            i.icon-arrow-left 
-            |back
         if (typeof username!="undefined")
-          a#new-bucket-link(href="javascript:null")
-            | New Bucket 
-            i.icon-plus
+          if (block && block.length)
+            a(href="../")
+              i.icon-arrow-left     
+              |  Home       
+          else
+            a#new-bucket-link(href="javascript:null")
+              | New Bucket 
+              i.icon-plus
         #new-bucket
           .block-header            
           .prompt
