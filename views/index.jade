@@ -68,7 +68,7 @@ block bodyscripts
     |  <a target="_blank" href="<%= url %>"><i class="icon-external-link"></i></i><a/>
     |  <span> | <%= timeAgo %> </span>  
     |  <span> | <%= user.username %> |  </span>  
-    |  <a class="menu"href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
+    |  <a class="menu" href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
     |</div>
   script#block-template(type="text/template")
     |<div class="block-header">
@@ -76,9 +76,12 @@ block bodyscripts
     |<a class="block-link bucket-select" href="javascript:null;"> select bucket <i class="icon-plus"></i> </a>
     |<a class="block-link select-message"> <b>selected</b> </a>
     ||&nbsp;
-    |<a class="block-link" href="<%= id %> "> view bucket <i class="icon-arrow-right"></i> </a>
+    |<a class="block-link" href="<%= _id %> "> view bucket <i class="icon-arrow-right"></i> </a>
     |</div>
-    |<h4 class="block-title"><%= title %></h4>
+    |<b class="block-title"> <%= title %> </b>
+    |<a class="edit" href="javascript:null;" >edit</a>
+    |<input class="new-title">
+    |<a class="update" href="javascript:null;" >Submit</a>
     |</div>
     |<ul class="block-view"></ul>
     |</div>

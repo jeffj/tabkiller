@@ -165,6 +165,8 @@
     };
   }
   function postid(req, res, next, id){
+    console.log(1)
+    return
     post.load(id, function (err, post) {
       if (err) return next(err)
       if (!post) return next(new Error('Failed to load article ' + id))
@@ -182,22 +184,23 @@
 
 
 
-
     if (!app || !model) {
       return;
     }
 
+
     path = options.path || '/' + model.modelName.toLowerCase();
-    pathWithId = path + '/:id';
+    pathWithId = path + '/:idbook';
 
     console.log(path)
+
 
     app.get(path, getListController(model));
     app.get(pathWithId, getReadController(model));
     app.post(path, auth.requiresLogin, getCreateController(model));
     app.put(pathWithId, auth.requiresLogin, auth.post.hasAuthorization, getUpdateController(model));
     app.del(pathWithId, auth.requiresLogin, auth.post.hasAuthorization, getDeleteController(model));
-    app.param('id', postid)
+    app.param('idbook', postid)
 
   };
 

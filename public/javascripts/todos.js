@@ -48,11 +48,9 @@ $(function ($, _, Backbone) {
   });
 
   Block = Backbone.Model.extend({
+
       idAttribute: "_id",
     //  sync: function () { return false; }
-    url: function () {
-      return "/block"+ ((this.id) ? '/' + this.id : '');
-    },
     defaults: function () {
       return {
           title: ""
@@ -84,13 +82,16 @@ $(function ($, _, Backbone) {
     // Reference to this collection's model.
     model: Block,
     // Note that url may also be defined as a function.
-    // url: function () {
-    //   return "/bookmark" + ((this.id) ? '/' + this.id : '');
-    // },
+    url: function () {
+      return "/block"+ ((this.id) ? '/' + this.id : '');
+    },
   });
 
   // Create our global collection of **Todos**.
   Blocks = new BlockList();
+
+
+
 
   // Todo Item View
   // --------------
@@ -100,14 +101,28 @@ $(function ($, _, Backbone) {
 
     events: {
        "click .bucket-select" : "bucketSelect",
+        "click .edit" : "edit",
+        "click .update" : "update",
+
     },
-    
+    update: function () {
+
+      this.model.save({title: this.$(".new-title").val()});
+      this.$el.removeClass("editing-block")
+      this.$(".block-title").html(this.model.toJSON().title )
+
+
+    },
+    edit: function () {
+      this.$el.addClass("editing-block")
+      this.$(".new-title").val( this.model.toJSON().title )
+    },    
     render: function () {
       this.$el.html(this.template( this.model.toJSON() ));
       return this;
     },
     bucketSelect:function(){
-      $("#new-post-block").val(this.model.get("id"))
+      $("#new-post-block").val(this.model.get("_id"))
       $(".selected-bucket").removeClass("selected-bucket")
       this.$el.addClass("selected-bucket");
     }
@@ -267,23 +282,21 @@ $(function ($, _, Backbone) {
     findBlock: function(block){
       var view,el, id;
 
-      id=Blocks.where({id:block._id})
+      id=Blocks.where({_id:block._id})
 
       if (id.length)
-        el=id[0].get("el");
+        el=id[0].el //.get("el");
       else
         el=this.addBlock(block);
-      
-      return el
-      
+      return el      
     },
 
 
     addBlock: function(block){
-      var blockModel = new Block({id: (block)? block._id : null ,title: (block)? block.title : null  });
+      var blockModel = new Block({_id: (block)? block._id : null ,title: (block)? block.title : null  });
       var blockview= new BlockView({model:blockModel});
       var render=blockview.render().el;
-      blockModel.set({el:render});
+      blockModel.el=render  //.set({el:render});
     //  block.save();
       Blocks.add(blockModel);
       return render

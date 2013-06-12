@@ -3,8 +3,8 @@ var httpParse = require('http')
    ,httpsParse = require('https')
    ,jsdom = require('jsdom')
    ,request = require('request')
-   , mongoose = require('mongoose')
-   , urlModel = mongoose.model('url');
+   ,mongoose = require('mongoose')
+   ,urlModel = mongoose.model('url');
 
 
 exports.parser=function(url, urlObj, cb){

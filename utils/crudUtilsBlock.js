@@ -7,7 +7,7 @@
   var parseUtils = require("./parseUtils.js")
     , mongoose = require('mongoose')
     , createUtils = require("./createUtils.js")
-    , post = mongoose.model('bookmark');
+    , post = mongoose.model('block');
 
 
 
@@ -136,7 +136,6 @@
           if ("user"!=key)  //ignore the user key
           result[key] = req.body[key];
         }
-        if (typeof result["url"]=="string")
           result.save(function (err) {
             if (!err) {
               var sender=result.toObject()
@@ -182,22 +181,18 @@
 
 
 
-
     if (!app || !model) {
       return;
     }
 
     path = options.path || '/' + model.modelName.toLowerCase();
-    pathWithId = path + '/:id';
-
-    console.log(path)
-
+    pathWithId = path + '/:idblock';
     app.get(path, getListController(model));
     app.get(pathWithId, getReadController(model));
     app.post(path, auth.requiresLogin, getCreateController(model));
-    app.put(pathWithId, auth.requiresLogin, auth.post.hasAuthorization, getUpdateController(model));
+    app.put(pathWithId, auth.requiresLogin, getUpdateController(model));
     app.del(pathWithId, auth.requiresLogin, auth.post.hasAuthorization, getDeleteController(model));
-    app.param('id', postid)
+    app.param('idblock', postid)
 
   };
 

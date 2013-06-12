@@ -1,8 +1,10 @@
 (function (exports) {
   "use strict";
   var mongoose = require('mongoose')
-    , crudUtils = require('../utils/crudUtils')
+    , crudUtils = require('../utils/crudUtilsBookmark')
+    , crudUtilsBlock = require('../utils/crudUtilsBlock')
     , bookmark = mongoose.model('bookmark')
+    , blocks = mongoose.model('block')
     , users = require('../app/controller/users')
     , block = mongoose.model('block');
 
@@ -28,14 +30,13 @@
   }
   exports.init = function (app, auth, passport) {
     app.get('/',index);
-
     app.get('/login', users.login);
     app.get('/signup', users.signup);
     app.get('/logout', users.logout)
     app.post('/users', users.create)
     app.post('/users/session', passport.authenticate('local', {failureRedirect: '/login', failureFlash: 'Invalid email or password.'}), users.session)
     crudUtils.initRoutesForModel({ 'app': app, 'model': bookmark, auth: auth });
-
+    crudUtilsBlock.initRoutesForModel({ 'app': app, 'model': blocks, auth: auth });
     app.get('/:blockid',index);
     app.param('blockid', blockid)
   };
