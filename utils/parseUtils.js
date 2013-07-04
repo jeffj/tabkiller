@@ -14,15 +14,11 @@ exports.parser=function(url, urlObj, cb){
     return    
   }
 
-  var parsed=parseURI(url)
+  var parsed=parseURI(url), parsedURL
 
   urlRequest(url, function(err, response, header){
 
-
     textScape(response, function(err, window){
-
-
-
 
       var title, favicon,titleJq;
       titleJq=window.$("title").text(), title= ( titleJq )? titleJq: parsed.authority+parsed.path;
@@ -42,8 +38,9 @@ exports.parser=function(url, urlObj, cb){
           favicon=null;
 
 
+        parsedURL=parsed.domain+parsed.path.replace(/\/$/g, '');
 
-        urlObj=new urlModel({title:title, favicon:favicon, url:parsed.source })
+        urlObj=new urlModel({title:title, favicon:favicon, url:parsedURL })
         urlObj.save(function(err){
           if (err){ cb(err, null); return};
           cb(null, urlObj);
@@ -181,7 +178,6 @@ urlRequest=function(url, callback){
 
 
 textScape=function(html, callback){
-   console.log( (typeof html=="string")? html:"<body>" )
     jsdom.env(
       (typeof html=="string")? html:"<body>",
       ["http://code.jquery.com/jquery.js"],
