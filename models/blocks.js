@@ -2,6 +2,8 @@ var mongoose = require('mongoose')
   Schema = mongoose.Schema;
    blockSchema = new mongoose.Schema({
     title: { 'type': String, 'default': "add title here..." }
+    , user  : { type : Schema.ObjectId, ref : 'User' } 
+
   });
 
    blockSchema.statics = {
