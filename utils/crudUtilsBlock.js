@@ -82,7 +82,7 @@
 
             parseUtils.parser(urlString, urlObj, function(err, urlObj){
 
-              createUtils.block(req.body.block, function(err, blockObj){
+              createUtils.block(req.body.block, req.user, function(err, blockObj){
 
                 m.urlObj=urlObj, m.block=blockObj,m.user=req.user;
 

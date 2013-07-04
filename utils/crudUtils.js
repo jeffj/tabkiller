@@ -79,10 +79,9 @@
 
       createUtils.url(urlString, function(err, urlObj){
 
-
             parseUtils.parser(urlString, urlObj, function(err, urlObj){
 
-              createUtils.block(req.body.block, function(err, blockObj){
+              createUtils.block(req.body.block, req.user.username, function(err, blockObj){
 
                 m.urlObj=urlObj, m.block=blockObj,m.user=req.user;
 
@@ -104,9 +103,6 @@
             });//parseUtils
 
           });//createUtils.url
-
-
-       
 
     };
   }
@@ -182,7 +178,6 @@
 
 
 
-
     if (!app || !model) {
       return;
     }
@@ -190,7 +185,6 @@
     path = options.path || '/' + model.modelName.toLowerCase();
     pathWithId = path + '/:id';
 
-    console.log(path)
 
     app.get(path, getListController(model));
     app.get(pathWithId, getReadController(model));
