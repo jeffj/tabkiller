@@ -16,12 +16,13 @@
   function errMsg(msg) {
     return {'error': {'message': msg.toString()}};
   }
+
   //------------------------------
   // List
   //
   function getListController(model) {
     return function (req, res) {
-      q={}
+      q={user:req.user}
       var block=req.param('block');
       if (block) q.block=block;
 
@@ -67,9 +68,6 @@
   }
 
 
-
-
-
   //------------------------------
   // Create
   //
@@ -82,7 +80,8 @@
 
             parseUtils.parser(urlString, urlObj, function(err, urlObj){
 
-              createUtils.block(req.body.block, function(err, blockObj){
+
+              createUtils.block(req.body.block, req.user,  function(err, blockObj){
 
                 m.urlObj=urlObj, m.block=blockObj,m.user=req.user;
 
@@ -104,10 +103,6 @@
             });//parseUtils
 
           });//createUtils.url
-
-
-       
-
     };
   }
 
@@ -125,7 +120,6 @@
       });
     };
   }
-
   //------------------------------
   // Update
   //
