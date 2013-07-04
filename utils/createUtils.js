@@ -12,21 +12,22 @@ exports.url=function(url, cb){
     });
 }
 
-exports.block=function(block, cb){
+exports.block=function(block, user, cb){
   blockModel.findOne({_id:block}, function(err, result){ 
-   if (err){ cb(err, null); return};
-      
+   if (err){ cb(err, null); return}; 
       var blockNew
 
       if (result)
         cb(null, result);
       else
-      blockNew=new blockModel(),
+      blockNew=new blockModel({user:user.id}),
       blockNew.save(function(){
         cb(null, blockNew);
       });
     });
 }
+
+//req.user.username
 
 
 
