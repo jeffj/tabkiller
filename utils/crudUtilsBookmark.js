@@ -28,9 +28,13 @@
     return function (req, res) {
       var block=req.param('block');
       var home=req.param('home');
+      var userId=req.param('userId');
+
       var q={}
       if (block) q.block=block;  //limit by blocks
-      if (home)  q.user=req.user  //limit by my bookmarks for home
+      if (home)  q.user=req.user 
+      if (userId)  q.user=userId
+       //limit by my bookmarks for home
       model
         .find(q)
         .populate("user", "username")

@@ -4,8 +4,6 @@ holder.ondragend = function () { this.className = ''; return false; };
 holder.ondrop = function (e) { e.preventDefault(); return false; };
 
 
-
-
 $(function ($, _, Backbone) {
 
   "use strict";
@@ -159,19 +157,19 @@ $(function ($, _, Backbone) {
        "click .edit"  : "edit",
        "click a.destroy" : "clear",
        "click .submit-update"  : "update",
-       "click .menu" : "menu"
+      // "click .menu" : "menu"
     },
-    menu:function(e){
-      var that=this;
-      that.flag=false;
-      this.dropdown.css({"display":"inline-block", "position":"absolute","left":$(event.target).position().left, "top":$(event.target).position().top+$(event.target).height()})
-      $(window).bind("click", function(){
-        if (that.flag==false) { that.flag=true; return false }
+    // menu:function(e){
+    //   var that=this;
+    //   that.flag=false;
+    //   this.dropdown.css({"display":"inline-block", "position":"absolute","left":$(event.target).position().left, "top":$(event.target).position().top+$(event.target).height()})
+    //   $(window).bind("click", function(){
+    //     if (that.flag==false) { that.flag=true; return false }
 
-        that.dropdown.css({"display":"none"})
-        $(this).unbind("click");
-      })
-    },
+    //     that.dropdown.css({"display":"none"})
+    //     $(this).unbind("click");
+    //   })
+    // },
     // The TodoView listens for changes to its model, re-rendering. Since there's
     // a one-to-one correspondence between a **Todo** and a **TodoView** in this
     // app, we set a direct reference on the model for convenience.
@@ -275,8 +273,9 @@ $(function ($, _, Backbone) {
 
        var params={};
        if (block) params.block = block;  //move these to absolute paths
-       if (home) params.home = home;  // val += ((home) ? '?home=' + true : '');//move these to absolute paths
-
+       if (home) params.home = home;
+       if (userId) params.userId = userId;
+         // val += ((home) ? '?home=' + true : '');//move these to absolute paths
       Posts.fetch({data: params });
     },
     newBucket:function(){ 

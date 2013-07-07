@@ -44,7 +44,7 @@ block content
 
 block bodyscripts
   script
-    username="#{username}", block="#{block}", home=#{home};
+    username="#{username}", block="#{block}", home=#{home}, userId="#{userId}";
   script#item-template(type="text/template")
     |<div class="view"> 
     |  <input class="title-edit">
@@ -66,16 +66,14 @@ block bodyscripts
     |   <div  id="other-dropdown-<%= _id %>" class="dropdown dropdown-tip">
     |    <ul class="dropdown-menu">
     |    <% _.each(OtherBookmarkBlocks, function(acs) { %> 
-    |     <li>  <a href="<%= acs.block._id%>" class="btn">   <b><%= acs.user.username %></b>  placed in <i> <%= acs.block.title %> </i> </a> </li>
+    |     <li>  <a target="_blank" href="/<%= acs.block._id%>" class="btn">   <b><%= acs.user.username %></b>  placed in <i> <%= acs.block.title %> </i> </a> </li>
     |    <% }); %>
     |    </ul>
     |   </div> 
     | <% } %>
     |  <a class="menu" data-dropdown="#dropdown-<%= _id %>" href="#"><i style=""class="icon-sort-down"></i></i><a/>
-
-
     |  <span> | <%= timeAgo %> </span>  
-    |  <span> | <%= user.username %></span>  
+    |  <a href="/user/<%= user.username %>"> | <%= user.username %></a>  
     |  <div  id="dropdown-<%= _id %>" class="dropdown dropdown-tip">
     |   <ul class="dropdown-menu">
     |    <li> <a class="edit" href="javascript:;" class="destroy"><i class="icon-edit"></i></a></li>
@@ -89,7 +87,7 @@ block bodyscripts
     |<a class="block-link select-message"> <b>selected</b> |&nbsp;</a>
     |<a class="block-link bucket-select" href="javascript:;"> select bucket <i class="icon-plus"></i> </a>
     ||&nbsp;
-    |<a class="block-link"> <%= username %> </a>
+    |<a class="block-link" href="/user/<%= username %>" > <%= username %> </a>
     ||&nbsp;
     |<a class="block-link" href="<%= _id %> "> view bucket <i class="icon-arrow-right"></i> </a>
     |</div>
@@ -100,4 +98,4 @@ block bodyscripts
     |</div>
     |<ul class="block-view"></ul>
     |</div>
-  script(type="text/javascript", src="javascripts/todos.js")
+  script(type="text/javascript", src="/javascripts/todos.js")

@@ -122,4 +122,19 @@ UserSchema.methods = {
   }
 }
 
+UserSchema.statics = {
+  /**
+   * Find article by id
+   *
+   * @param {ObjectId} id
+   * @param {Function} cb
+   * @api public
+   */
+  load: function (id, cb) {
+    this.findOne({ username : id })
+      .populate('user', 'username')
+      .exec(cb)
+  }
+}
+
 mongoose.model('User', UserSchema)
