@@ -8,7 +8,10 @@
     , mongoose = require('mongoose')
     , createUtils = require("./createUtils.js")
     , post = mongoose.model('bookmark')
-    , user = mongoose.model('User');
+    , user = mongoose.model('User')
+    , _ = require('underscore')
+
+    //, blockModel = mongoose.model('block');
 
 
 
@@ -38,18 +41,74 @@
         .lean()
         .exec(function (err, result) {
         if (!err) {
-
-
-
           var json;
           json=parseResults(result, req.user); //adds a myPost key for the post the user ownes
-          res.send(json);
+
+          var PostQ=pullBlocksMongoQ(result)
+          post
+            .find(PostQ)
+            .populate("user", "username")
+            .populate("block")
+            .exec(function (err, resultPosts) {
+
+            //console.log()
+
+
+            finalJson=_.map(json, function(mapped){ 
+
+              
+
+              var matched=_.filter(resultPosts, function(filter){ 
+                // console.log(filter.user)
+                // console.log(mapped.user._id)
+                return String(filter.urlObj)==String(mapped.urlObj._id) &&  String(filter._id)!= String(mapped._id)
+
+              });
+
+              matchedMapped=_.map(matched, function(mapped){ 
+
+                return mapped.block
+
+              })
+
+              //console.log(matched.length)
+
+              mapped.OtherBookmarkBlocks=matched;
+
+              return mapped; 
+
+            });
+
+            console.log()
+
+            res.send(finalJson);
+
+
+
+
+          });
+
         } else {
           res.send(errMsg(err));
         }
       });
     };
   }
+
+  function pullBlocksMongoQ(postList){
+    var array=[];
+
+    for (var i = postList.length - 1; i >= 0; i--) {
+      var URLId;
+      if (postList[i].urlObj._id) URLId=postList[i].urlObj._id; else URLId=postList[i].urlObj;
+      if (postList[i].totalBookmarks>1)
+       array.push(URLId)
+
+    };  
+
+    return { urlObj: { $in: array } };
+
+  };
 
   function parseResults(result, user){
   var id 
@@ -63,6 +122,9 @@
       if(result[i].block)
         result[i].blocktitle=result[i].block.title,
         result[i].blockid=String(result[i].block._id);
+      
+      if(result[i].blockUser)
+        result[i].blockUserName=result[i].blockUser.username;
 
       if(result[i].urlObj)
         result[i].url=result[i].urlObj.url,
@@ -70,6 +132,7 @@
         result[i].totalBookmarks=result[i].urlObj.totalBookmarks;
       if (result[i].urlObj.favicon)
         result[i].favicon=result[i].urlObj.favicon;
+
     };
     return result
   }

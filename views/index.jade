@@ -6,30 +6,31 @@ block styles
 block content
     #cover
     #app
-      .form-box
-        if (typeof username!="undefined")
-            .form-group.location
-              input#new-post-url(type="text", placeholder="Add URL here")
-              input#new-post-block(type="text", placeholder="Add id")
+      section#top
+        .form-box
+          if (typeof username!="undefined")
+              .form-group.location
+                input#new-post-url(type="text", placeholder="Add URL here")
+                input#new-post-block(type="text", placeholder="Add id", style="display:none;")
 
-              a.submit(href="javascript:null;")
-                | Submit              
-        else
-          br
-          .login-prompt
-            a(href="/login")
-              | Login to Post!
-      - var klass = (block ? 'block-url' : '')
-      section#main(class=klass)
+                a.submit(href="javascript:;")
+                  | Submit              
+          else
+            br
+            .login-prompt
+              a(href="/login")
+                | Login to Post!
         if (typeof username!="undefined")
           if (block && block.length)
             a(href="../")
               i.icon-arrow-left     
               |  Home       
           else
-            a#new-bucket-link(href="javascript:null")
+            a#new-bucket-link(href="javascript:;")
               | New Bucket 
               i.icon-plus
+        - var klass = (block ? 'block-url' : '')
+      section#main(class=klass)
         #new-bucket
           .block-header            
           .prompt
@@ -41,24 +42,15 @@ block content
 
         ul#list
 
-
 block bodyscripts
   script
     username="#{username}", block="#{block}", home=#{home};
   script#item-template(type="text/template")
-    |<div class="view">
-    |  <div class="dropdown dropdown-tip">
-    |  <ul class="dropdown-menu">
-    |  <% if (myPost == true) { %>
-    |  <li> <a class="edit" href="javascript:null;" class="destroy"><i class="icon-edit"></i></a></li>
-    |  <li> <a class="destroy" href="javascript:null;" class="destroy"><i class="icon-remove"></i> </a> </li>
-    |  <% } %>
-    |  </ul>
-    |  </div>  
+    |<div class="view"> 
     |  <input class="title-edit">
     |  <div class="body"> <%= body %> </div>
     |  <textarea class="body-edit"> <%= title %> </textarea>
-    |  <a href="javascript:null;" class="submit-update">Update</a>
+    |  <a href="javascript:;" class="submit-update">Update</a>
     |  <a href="<%= url %>" target="_blank" >
     |  <% if (favicon) { %>
     |  <img class="icon" src="<%= favicon %>">  </img>  
@@ -68,25 +60,43 @@ block bodyscripts
     |  </a>
     |  <div class="title" >&nbsp;&nbsp;<span><%= title %> </span> </div> 
     |  <a class="ext-link" target="_blank" href="<%= url %>"><i class="icon-external-link"></i></i><a/>
-    |<%= totalBookmarks %>
+
+    | <% if (OtherBookmarkBlocks.length > 0) { %>
+    |   <a class="menu" data-dropdown="#other-dropdown-<%= _id %>" href="#"> <i class="icon-group"></i> (<%= OtherBookmarkBlocks.length %>) <a/>
+    |   <div  id="other-dropdown-<%= _id %>" class="dropdown dropdown-tip">
+    |    <ul class="dropdown-menu">
+    |    <% _.each(OtherBookmarkBlocks, function(acs) { %> 
+    |     <li>  <a href="<%= acs.block._id%>" class="btn">   <b><%= acs.user.username %></b>  placed in <i> <%= acs.block.title %> </i> </a> </li>
+    |    <% }); %>
+    |    </ul>
+    |   </div> 
+    | <% } %>
+    |  <a class="menu" data-dropdown="#dropdown-<%= _id %>" href="#"><i style=""class="icon-sort-down"></i></i><a/>
+
+
     |  <span> | <%= timeAgo %> </span>  
-    |  <span> | <%= user.username %> |  </span>  
-    |  <a class="menu" href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
-    |</div>
+    |  <span> | <%= user.username %></span>  
+    |  <div  id="dropdown-<%= _id %>" class="dropdown dropdown-tip">
+    |   <ul class="dropdown-menu">
+    |    <li> <a class="edit" href="javascript:;" class="destroy"><i class="icon-edit"></i></a></li>
+    |    <li> <a class="destroy" href="javascript:;" class="destroy"><i class="icon-remove"></i> </a> </li>
+    |   </ul>
+    |  </div> 
+
   script#block-template(type="text/template")
     |<div class="block-header">
     |<div class="block-header-right">
-    |<a class="block-link bucket-select" href="javascript:null;"> select bucket <i class="icon-plus"></i> </a>
-    |<a class="block-link select-message"> <%= username %> </a>
+    |<a class="block-link select-message"> <b>selected</b> |&nbsp;</a>
+    |<a class="block-link bucket-select" href="javascript:;"> select bucket <i class="icon-plus"></i> </a>
     ||&nbsp;
-    |<a class="block-link select-message"> <b>selected</b> </a>
+    |<a class="block-link"> <%= username %> </a>
     ||&nbsp;
     |<a class="block-link" href="<%= _id %> "> view bucket <i class="icon-arrow-right"></i> </a>
     |</div>
     |<b class="block-title"> <%= title %> </b>
-    |<a class="edit" href="javascript:null;" >edit</a>
+    |<a class="edit" href="javascript:;" >edit</a>
     |<input class="new-title">
-    |<a class="update" href="javascript:null;" >Submit</a>
+    |<a class="update" href="javascript:;" >Submit</a>
     |</div>
     |<ul class="block-view"></ul>
     |</div>

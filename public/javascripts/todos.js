@@ -3,6 +3,9 @@ holder.ondragover = function () { this.className = 'hover'; return false; };
 holder.ondragend = function () { this.className = ''; return false; };
 holder.ondrop = function (e) { e.preventDefault(); return false; };
 
+
+
+
 $(function ($, _, Backbone) {
 
   "use strict";
@@ -29,6 +32,8 @@ $(function ($, _, Backbone) {
         , favicon: ""
         , blockid : null
         , blocktitle : "add title here..."
+        , blockUserName: null
+        , OtherBookmarkBlocks: []
       };
     },
 
@@ -68,9 +73,13 @@ $(function ($, _, Backbone) {
     model: Post,
     // Note that url may also be defined as a function.
     url: function () {
-      return "/bookmark"+ ((this.id) ? '/' + this.id : '') + ((block) ? '?block=' + block : '') + ((home) ? '?home=' + true : '');
+       var val ="/bookmark" 
+        val +=((this.id) ? '/' + this.id : '');
+
+      return  val;
       // + ((this.id) ? '/' + this.id : '');
     },
+
   });
 
   // Create our global collection of **Todos**.
@@ -119,7 +128,13 @@ $(function ($, _, Backbone) {
     },    
     render: function () {
       this.$el.html(this.template( this.model.toJSON() ));
+      var that=this;
+      this.$el.bind("dragover", function(){ 
+        if (!that.$el.hasClass("selected-bucket")) that.$(".bucket-select").click();
+      });
       return this;
+
+
     },
     bucketSelect:function(){
       $("#new-post-block").val(this.model.get("_id"))
@@ -167,7 +182,13 @@ $(function ($, _, Backbone) {
 
     // Re-render the titles of the todo item.
     render: function () {
+
+
+
+            // , _id : String(Math.random()*100000000000000000)
+
       var JSON=this.model.toJSON()
+      if (!JSON._id) JSON._id=String(Math.random()*100000000000000000)
       JSON.timeAgo=$.timeago(this.model.get("createdAt"))
       this.$el.html(this.template(JSON));
       this.input = this.$('.edit');
@@ -214,6 +235,7 @@ $(function ($, _, Backbone) {
   // ---------------
 
 
+
   // Our overall **AppView** is the top-level piece of UI.
   AppView = Backbone.View.extend({
 
@@ -248,14 +270,20 @@ $(function ($, _, Backbone) {
       //this.footer = this.$('footer');
       this.main = $('#main');
       $(window).on("drop")
-      $("#new-bucket-link").bind("click",function(){ 
+      $("#new-bucket-link").bind("click",this.newBucket)
+
+
+       var params={};
+       if (block) params.block = block;  //move these to absolute paths
+       if (home) params.home = home;  // val += ((home) ? '?home=' + true : '');//move these to absolute paths
+
+      Posts.fetch({data: params });
+    },
+    newBucket:function(){ 
         $("#new-post-block").val("")
         $(".selected-bucket").removeClass("selected-bucket")
         $("#new-bucket").addClass("selected-bucket")
-      })
-      Posts.fetch();
     },
-
     // Re-rendering the App just means refreshing the statistics -- the rest
     // of the app doesn't change.
     render: function () {
@@ -272,7 +300,7 @@ $(function ($, _, Backbone) {
     addOne: function (post) {
       var view, block; 
       view = new PostView({model: post});
-      block=App.findBlock( {title: post.get("blocktitle"), _id:post.get("blockid"), username:post.get("blockUser").username} )
+      block=App.findBlock( {title: post.get("blocktitle"), _id:post.get("blockid"), username:post.get("blockUserName")} )
 
       $("ul.block-view",block).prepend(view.render().el);
       $("#list").prepend(block) //view.render().el);//.
@@ -336,8 +364,11 @@ $(function ($, _, Backbone) {
 
   });
 
+
   // Finally, we kick things off by creating the **App**.
   App = new AppView();
+
+  $("#top").bind("dragover", App.newBucket);
 
   $(window).on("drop", function(e){
     var text=e.originalEvent.dataTransfer.getData('Text');
