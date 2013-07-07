@@ -33,6 +33,8 @@
         , 'userid':(req.user) ?  req.user._id: undefined
         , block: blockId.length ? blockId: undefined
         , home: false
+        , userId: undefined
+
       });
   }
   function index(req, res) {
@@ -42,6 +44,19 @@
         , 'userid':(req.user) ?  req.user._id: undefined
         , block: undefined
         , home: true
+        , userId: undefined
+
+      });
+  }
+  function publicRes(req, res) {
+    res.render('index', { 
+        'title': 'Pelican'
+        , 'username':(req.user) ?  req.user.username: undefined
+        , 'userid':(req.user) ?  req.user._id: undefined
+        , block: undefined
+        , home: false
+        , userId: undefined
+
       });
   }
   function blockid(req, res, next, id){
@@ -70,8 +85,12 @@
     
     crudUtils.initRoutesForModel({ 'app': app, 'model': bookmark, auth: auth });
     crudUtilsBlock.initRoutesForModel({ 'app': app, 'model': blocks, auth: auth });
+
+    app.get('/public',publicRes);
+
     app.get('/:blockid',bucket);
     app.param('blockid', blockid)
+
 
     app.get('/user/:userid',user);
     app.param('userid', userid)
