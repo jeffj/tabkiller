@@ -10,7 +10,7 @@ block content
         if (typeof username!="undefined")
             .form-group.location
               input#new-post-url(type="text", placeholder="Add URL here")
-              input#new-post-block(type="text", placeholder="Add id", style="display:none;")
+              input#new-post-block(type="text", placeholder="Add id")
 
               a.submit(href="javascript:null;")
                 | Submit              
@@ -44,7 +44,7 @@ block content
 
 block bodyscripts
   script
-    username="#{username}", block="#{block}";;
+    username="#{username}", block="#{block}", home=#{home};
   script#item-template(type="text/template")
     |<div class="view">
     |  <div class="dropdown dropdown-tip">
@@ -68,6 +68,7 @@ block bodyscripts
     |  </a>
     |  <div class="title" >&nbsp;&nbsp;<span><%= title %> </span> </div> 
     |  <a class="ext-link" target="_blank" href="<%= url %>"><i class="icon-external-link"></i></i><a/>
+    |<%= totalBookmarks %>
     |  <span> | <%= timeAgo %> </span>  
     |  <span> | <%= user.username %> |  </span>  
     |  <a class="menu" href="javascript:null;"><i class="icon-sort-down"></i></i><a/>
@@ -76,6 +77,8 @@ block bodyscripts
     |<div class="block-header">
     |<div class="block-header-right">
     |<a class="block-link bucket-select" href="javascript:null;"> select bucket <i class="icon-plus"></i> </a>
+    |<a class="block-link select-message"> <%= username %> </a>
+    ||&nbsp;
     |<a class="block-link select-message"> <b>selected</b> </a>
     ||&nbsp;
     |<a class="block-link" href="<%= _id %> "> view bucket <i class="icon-arrow-right"></i> </a>

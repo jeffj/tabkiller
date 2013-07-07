@@ -1,14 +1,32 @@
 var mongoose = require('mongoose')
     , urlModel = mongoose.model('url')
-    , blockModel = mongoose.model('block');
+    , blockModel = mongoose.model('block')
+    , parseUtil = require('./parseUtils')
+    , parseURI=parseUtil.parseURI
+    , canconicalURL=parseUtil.canconicalURL;
+
 
 exports.url=function(url, cb){
+    //here we check to see if the url has already been parsed.  Has the work already been done is the?
     var urlObj;
     urlParseObj=parseURI(url);
-    parsedURL=urlParseObj.domain+urlParseObj.path.replace(/\/$/g, '');
+    parsedURL=canconicalURL(urlParseObj)
+
+    console.log(parsedURL);
+
+   // urlParseObj.domain+urlParseObj.path.replace(/\/$/g, '');
     urlModel.findOne({url:parsedURL}, function(err, responseURL){
-      if (err){ cb(err, null); return false} 
-      cb(null, responseURL);   
+      if (err){ cb(err, null); return false};
+
+
+      if (responseURL==null)
+        cb(null, responseURL); 
+      else{
+      responseURL.totalBookmarks+=1
+        responseURL.save(function(){
+          cb(null, responseURL); 
+        })
+      };
     });
 }
 
@@ -27,24 +45,23 @@ exports.block=function(block, user, cb){
     });
 }
 
-//req.user.username
 
 
-
-  function parseURI(sourceUri){
-    var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"],
-      uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri),
-      uri = {};
+// //req.user.username
+//   function parseURI(sourceUri){
+//     var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"],
+//       uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri),
+//       uri = {};
     
-    for(var i = 0; i < 10; i++){
-      uri[uriPartNames[i]] = (uriParts[i] ? uriParts[i] : "");
-    }
+//     for(var i = 0; i < 10; i++){
+//       uri[uriPartNames[i]] = (uriParts[i] ? uriParts[i] : "");
+//     }
     
-    /* Always end directoryPath with a trailing backslash if a path was present in the source URI
-    Note that a trailing backslash is NOT automatically inserted within or appended to the "path" key */
-    if(uri.directoryPath.length > 0){
-      uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
-    }
+//     /* Always end directoryPath with a trailing backslash if a path was present in the source URI
+//     Note that a trailing backslash is NOT automatically inserted within or appended to the "path" key */
+//     if(uri.directoryPath.length > 0){
+//       uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
+//     }
     
-    return uri;
-  };
+//     return uri;
+//   };

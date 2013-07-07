@@ -8,16 +8,24 @@
     , users = require('../app/controller/users')
     , block = mongoose.model('block');
 
-  function index(req, res) {
-    console.log(req.path.replace(/^\/|\/$/g, ''))
+
+  function bucket(req, res) {
     var blockId=req.path.replace(/^\/|\/$/g, '')
-
-
     res.render('index', { 
         'title': 'Pelican'
         , 'username':(req.user) ?  req.user.username: undefined
         , 'userid':(req.user) ?  req.user._id: undefined
         , block: blockId.length ? blockId: undefined
+        , home: false
+      });
+  }
+  function index(req, res) {
+    res.render('index', { 
+        'title': 'Pelican'
+        , 'username':(req.user) ?  req.user.username: undefined
+        , 'userid':(req.user) ?  req.user._id: undefined
+        , block: undefined
+        , home: true
       });
   }
   function blockid(req, res, next, id){
@@ -37,7 +45,7 @@
     app.post('/users/session', passport.authenticate('local', {failureRedirect: '/login', failureFlash: 'Invalid email or password.'}), users.session)
     crudUtils.initRoutesForModel({ 'app': app, 'model': bookmark, auth: auth });
     crudUtilsBlock.initRoutesForModel({ 'app': app, 'model': blocks, auth: auth });
-    app.get('/:blockid',index);
+    app.get('/:blockid',bucket);
     app.param('blockid', blockid)
   };
 }(exports));

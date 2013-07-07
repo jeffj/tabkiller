@@ -27,18 +27,17 @@ exports.parser=function(url, urlObj, cb){
         favicon=url.split("/")[0]+"//"+url.split("/")[2]+"/favicon.ico"  
       }
       if( favicon.slice(0, 1)=="/")
-        favicon=parsed.protocol+"://"+parsed.domain+favicon;
+      favicon=parsed.protocol+"://"+parsed.domain+favicon;
+
+
       urlRequest(favicon, function(err, responseFavi, headerFavi){
 
-        if ( headerFavi && headerFavi["content-type"].match(/image/i) ){
-          // favicon=+urlFaviObj.protocol;
-          // if (urlFaviObj.subDomain)favicon=+urlFaviObj.subDomain;
-          // favicon=+urlFaviObj.hostName+"/favicon.ico";
+        if ( headerFavi && headerFavi["content-length"]  && Number(headerFavi["content-length"])>0 ){
+          //do nothing the favicon is good
         }else
           favicon=null;
 
-
-        parsedURL=parsed.domain+parsed.path.replace(/\/$/g, '');
+        parsedURL=canconicalURL(parsed)
 
         urlObj=new urlModel({title:title, favicon:favicon, url:parsedURL })
         urlObj.save(function(err){
@@ -188,7 +187,11 @@ textScape=function(html, callback){
     );
 };
 
-function parseURI(sourceUri){
+
+
+canconicalURL=exports.canconicalURL=function(parsed){ return parsed.protocol+"://"+parsed.domain+parsed.path.replace(/\/$/g, '');}
+
+parseURI=exports.parseURI=function(sourceUri){
     var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"],
       uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri),
       uri = {};

@@ -5,9 +5,10 @@ var mongoose = require('mongoose')
        , location: { 'type': String, 'default': '' }
        , body: { 'type': String, 'default': 'empty post...' }
        , createdAt : {type : Date, default : Date.now}
-       , user  : { type : Schema.ObjectId, ref : 'User' } 
+       , user  : { type : Schema.ObjectId, ref : 'User', 'default': null } 
        , favicon: { 'type': String ,'default': ''}
-       , block  : { type : Schema.ObjectId, ref : 'block', 'default': null } 
+       , block  : { type : Schema.ObjectId, ref : 'block', 'default': null }
+       , blockUser: { type : Schema.ObjectId, ref : 'User', 'default': null } 
   });
 
    bookmarkSchema.statics = {

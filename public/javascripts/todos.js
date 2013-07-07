@@ -29,7 +29,6 @@ $(function ($, _, Backbone) {
         , favicon: ""
         , blockid : null
         , blocktitle : "add title here..."
-
       };
     },
 
@@ -54,6 +53,7 @@ $(function ($, _, Backbone) {
     defaults: function () {
       return {
           title: ""
+          , username:""
       };
     },
 
@@ -68,7 +68,7 @@ $(function ($, _, Backbone) {
     model: Post,
     // Note that url may also be defined as a function.
     url: function () {
-      return "/bookmark"+ ((this.id) ? '/' + this.id : '') + ((block) ? '?block=' + block : '');
+      return "/bookmark"+ ((this.id) ? '/' + this.id : '') + ((block) ? '?block=' + block : '') + ((home) ? '?home=' + true : '');
       // + ((this.id) ? '/' + this.id : '');
     },
   });
@@ -272,7 +272,7 @@ $(function ($, _, Backbone) {
     addOne: function (post) {
       var view, block; 
       view = new PostView({model: post});
-      block=App.findBlock( {title: post.get("blocktitle"), _id:post.get("blockid")} )
+      block=App.findBlock( {title: post.get("blocktitle"), _id:post.get("blockid"), username:post.get("blockUser").username} )
 
       $("ul.block-view",block).prepend(view.render().el);
       $("#list").prepend(block) //view.render().el);//.
@@ -293,7 +293,7 @@ $(function ($, _, Backbone) {
 
 
     addBlock: function(block){
-      var blockModel = new Block({_id: (block)? block._id : null ,title: (block)? block.title : null  });
+      var blockModel = new Block({_id: (block)? block._id : null ,title: (block)? block.title : null,  username: (block)? block.username : null});
       var blockview= new BlockView({model:blockModel});
       var render=blockview.render().el;
       blockModel.el=render  //.set({el:render});
@@ -324,6 +324,7 @@ $(function ($, _, Backbone) {
           , user: {username:this.username}
           , block : blockVal
           , blockid : blockVal
+          , totalBookmarks : 1
 
         });
       this.inputUrl.val("")

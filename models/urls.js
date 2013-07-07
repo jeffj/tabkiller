@@ -6,7 +6,9 @@ var mongoose = require('mongoose')
        , url: { 'type': String, 'default': '' }
        , title: { 'type': String ,'default': ''}
        , favicon: { 'type': String ,'default': ''}
+       , totalBookmarks: { 'type': Number, 'default': 1 }
   });
+
 
    bookmarkSchema.statics = {
   /**

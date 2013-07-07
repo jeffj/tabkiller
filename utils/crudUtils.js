@@ -35,6 +35,18 @@
         .lean()
         .exec(function (err, result) {
         if (!err) {
+
+          urlQ
+          post
+            .find()
+            .exec(function (err, resultURL) {
+              if (!err) {
+                console.log()
+
+              }else
+              res.send(errMsg(err));
+            });
+
           var json;
           json=parseResults(result, req.user); //adds a myPost key for the post the user ownes
           res.send(json);

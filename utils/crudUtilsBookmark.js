@@ -7,7 +7,8 @@
   var parseUtils = require("./parseUtils.js")
     , mongoose = require('mongoose')
     , createUtils = require("./createUtils.js")
-    , post = mongoose.model('bookmark');
+    , post = mongoose.model('bookmark')
+    , user = mongoose.model('User');
 
 
 
@@ -22,20 +23,24 @@
   //
   function getListController(model) {
     return function (req, res) {
-      q={user:req.user}
       var block=req.param('block');
-      if (block) q.block=block;
-
-      //if (req.)
+      var home=req.param('home');
+      var q={}
+      if (block) q.block=block;  //limit by blocks
+      if (home)  q.user=req.user  //limit by my bookmarks for home
       model
         .find(q)
         .populate("user", "username")
         .populate("urlObj")
         .populate("block")
+        .populate("blockUser", "username")
         .sort("createdAt")
         .lean()
         .exec(function (err, result) {
         if (!err) {
+
+
+
           var json;
           json=parseResults(result, req.user); //adds a myPost key for the post the user ownes
           res.send(json);
@@ -62,6 +67,8 @@
       if(result[i].urlObj)
         result[i].url=result[i].urlObj.url,
         result[i].title=result[i].urlObj.title;
+        result[i].totalBookmarks=result[i].urlObj.totalBookmarks;
+      if (result[i].urlObj.favicon)
         result[i].favicon=result[i].urlObj.favicon;
     };
     return result
@@ -83,7 +90,7 @@
 
               createUtils.block(req.body.block, req.user,  function(err, blockObj){
 
-                m.urlObj=urlObj, m.block=blockObj,m.user=req.user;
+                m.urlObj=urlObj, m.block=blockObj,m.user=req.user, m.blockUser=blockObj.user;
 
                 m.save(function(err){
                   if (!err) {
