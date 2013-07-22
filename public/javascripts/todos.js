@@ -173,9 +173,15 @@ $(function ($, _, Backbone) {
     // The TodoView listens for changes to its model, re-rendering. Since there's
     // a one-to-one correspondence between a **Todo** and a **TodoView** in this
     // app, we set a direct reference on the model for convenience.
+    sync:function(event,data){
+      $("#new-post-block").val(data.block)
+      this.model.get("bockObj").set("_id", data.block)
+    },
     initialize: function () {
       this.model.bind('change', this.render, this);
       this.model.bind('destroy', this.remove, this);
+      this.model.bind('sync', this.sync, this);
+
     },
 
     // Re-render the titles of the todo item.
@@ -301,21 +307,25 @@ $(function ($, _, Backbone) {
       view = new PostView({model: post});
       block=App.findBlock( {title: post.get("blocktitle"), _id:post.get("blockid"), username:post.get("blockUserName")} )
 
-      $("ul.block-view",block).prepend(view.render().el);
-      $("#list").prepend(block) //view.render().el);//.
-      $(".block-link", block).click();//click the new bucket to focus it.
+      post.set("bockObj",block.id);
+
+      $("ul.block-view",block.el).prepend(view.render().el);
+      $("#list").prepend(block.el) //view.render().el);//.
+      $(".block-link", block.el).click();//click the new bucket to focus it.
 
     },
     findBlock: function(block){
-      var view,el, id;
+      var view,el, id, blockObj;
 
-      id=Blocks.where({_id:block._id})
+      id=Blocks.findWhere({_id:block._id})
 
-      if (id.length)
-        el=id[0].el //.get("el");
+      if (id)
+        el=id.el //.get("el");
       else
-        el=this.addBlock(block);
-      return el      
+        blockObj=this.addBlock(block),
+        el=blockObj.el,
+        id=blockObj.id;
+      return { el:el, id:id }      
     },
 
 
@@ -326,7 +336,7 @@ $(function ($, _, Backbone) {
       blockModel.el=render  //.set({el:render});
     //  block.save();
       Blocks.add(blockModel);
-      return render
+      return {el:render,id: blockModel}
     },
 
     // Add all items in the **Todos** collection at once.
