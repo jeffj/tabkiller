@@ -7,7 +7,7 @@
   var parseUtils = require("./parseUtils.js")
     , mongoose = require('mongoose')
     , createUtils = require("./createUtils.js")
-    , post = mongoose.model('bookmark')
+   // , post = mongoose.model('bookmark')
     , user = mongoose.model('User')
     , _ = require('underscore')
 
@@ -35,6 +35,7 @@
       if (home)  q.user=req.user 
       if (userId)  q.user=userId
        //limit by my bookmarks for home
+     //console.
       model
         .find(q)
         .populate("user", "username")
@@ -48,8 +49,8 @@
           var json;
           json=parseResults(result, req.user); //adds a myPost key for the post the user ownes
 
-          var PostQ=pullBlocksMongoQ(result)
-          post
+          var PostQ=pullURLMongoQ(result)
+          model
             .find(PostQ)
             .populate("user", "username")
             .populate("block")
@@ -69,11 +70,11 @@
 
               });
 
-              matchedMapped=_.map(matched, function(mapped){ 
+              // matchedMapped=_.map(matched, function(mapped){ 
 
-                return mapped.block
+              //   return mapped.block
 
-              })
+              // })
 
               //console.log(matched.length)
 
@@ -83,7 +84,6 @@
 
             });
 
-            console.log()
 
             res.send(finalJson);
 
@@ -99,7 +99,7 @@
     };
   }
 
-  function pullBlocksMongoQ(postList){
+  function pullURLMongoQ(postList){
     var array=[];
 
     for (var i = postList.length - 1; i >= 0; i--) {

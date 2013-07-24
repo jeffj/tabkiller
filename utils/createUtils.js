@@ -11,22 +11,19 @@ exports.url=function(url, cb){
     var urlObj;
     urlParseObj=parseURI(url);
     parsedURL=canconicalURL(urlParseObj)
-
-    console.log(parsedURL);
-
    // urlParseObj.domain+urlParseObj.path.replace(/\/$/g, '');
     urlModel.findOne({url:parsedURL}, function(err, responseURL){
       if (err){ cb(err, null); return false};
 
 
-      if (responseURL==null)
-        cb(null, responseURL); 
-      else{
-      responseURL.totalBookmarks+=1
-        responseURL.save(function(){
+      // if (responseURL==null)
+      //   cb(null, responseURL); 
+      // else{
+     // responseURL.totalBookmarks+=1
+       // responseURL.save(function(){
           cb(null, responseURL); 
-        })
-      };
+       // })
+     // };
     });
 }
 
