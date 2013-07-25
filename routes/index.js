@@ -38,12 +38,13 @@
       });
   }
   function index(req, res) {
+    var home = req.user ? true:false
     res.render('index', { 
         'title': 'Pelican'
         , 'username':(req.user) ?  req.user.username: undefined
         , 'userid':(req.user) ?  req.user._id: undefined
         , block: undefined
-        , home: true
+        , home: home
         , userId: undefined
 
       });
