@@ -7,13 +7,8 @@
   var parseUtils = require("./parseUtils.js")
     , mongoose = require('mongoose')
     , createUtils = require("./createUtils.js")
-   // , post = mongoose.model('bookmark')
     , user = mongoose.model('User')
     , _ = require('underscore')
-
-    //, blockModel = mongoose.model('block');
-
-
 
   //console.log(parseUtils.parser)
   "use strict";
@@ -55,28 +50,14 @@
             .populate("user", "username")
             .populate("block")
             .exec(function (err, resultPosts) {
-
-            //console.log()
-
-
             finalJson=_.map(json, function(mapped){ 
 
               
 
               var matched=_.filter(resultPosts, function(filter){ 
-                // console.log(filter.user)
-                // console.log(mapped.user._id)
                 return String(filter.urlObj)==String(mapped.urlObj._id) &&  String(filter._id)!= String(mapped._id)
 
               });
-
-              // matchedMapped=_.map(matched, function(mapped){ 
-
-              //   return mapped.block
-
-              // })
-
-              //console.log(matched.length)
 
               mapped.OtherBookmarkBlocks=matched;
 
@@ -84,11 +65,7 @@
 
             });
 
-
             res.send(finalJson);
-
-
-
 
           });
 
