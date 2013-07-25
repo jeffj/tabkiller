@@ -9,6 +9,7 @@
     , createUtils = require("./createUtils.js")
     , user = mongoose.model('User')
     , _ = require('underscore')
+    ,post =mongoose.model('bookmark')
 
   //console.log(parseUtils.parser)
   "use strict";
@@ -51,16 +52,11 @@
             .populate("block")
             .exec(function (err, resultPosts) {
             finalJson=_.map(json, function(mapped){ 
-
-              
-
               var matched=_.filter(resultPosts, function(filter){ 
                 return String(filter.urlObj)==String(mapped.urlObj._id) &&  String(filter._id)!= String(mapped._id)
 
               });
-
               mapped.OtherBookmarkBlocks=matched;
-
               return mapped; 
 
             });
@@ -136,18 +132,29 @@
 
                 m.urlObj=urlObj, m.block=blockObj,m.user=req.user, m.blockUser=blockObj.user;
 
-                m.save(function(err){
-                  if (!err) {
-                    var sender=m.toJSON()
-                    sender.user={username:req.user.username}
-                    sender.url=urlObj.url
-                    sender.title=urlObj.title
-                    sender.favicon=urlObj.favicon                
-                    res.send(sender);
-                  } else {
-                    res.send(errMsg(err));
-                  }
-                });
+                model
+                  .find({urlObj:urlObj})
+                  .populate("user", "username")
+                  .populate("block")
+                  .exec(function(err, resultsURL){
+
+                    
+                      m.save(function(err){
+                        if (!err) {
+                          var sender=m.toJSON()
+                          sender.OtherBookmarkBlocks=resultsURL
+                          sender.user={username:req.user.username}
+                          sender.url=urlObj.url
+                          sender.title=urlObj.title
+                          sender.favicon=urlObj.favicon                
+                          res.send(sender);
+                        } else {
+                          res.send(errMsg(err));
+                        }
+                      });
+                  });
+
+      
 
               });//createUtils.url
            
