@@ -37,6 +37,7 @@
           .populate("urlObj")
           .populate("block")
           .populate("blockUser", "username")
+          .sort("-createdAt")
           .lean()
           .exec(function(err, resultUserBookmarks){
 
@@ -71,7 +72,7 @@
 
                       
 
-                      combinedList=out.concat(resultUserBookmarks.slice(0,10))
+                      combinedList=out.concat(resultUserBookmarks.slice(0,200))
 
 
                       combinedList=_.sortBy(combinedList, function(obj){ 
