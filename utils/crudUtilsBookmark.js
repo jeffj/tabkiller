@@ -32,7 +32,7 @@
       if (home)  q.user=req.user 
       if (userId)  q.user=userId
         model
-          .find({user:req.user})
+          .find(q)
           .populate("user", "username")
           .populate("urlObj")
           .populate("block")
