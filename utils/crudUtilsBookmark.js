@@ -9,7 +9,8 @@
     , createUtils = require("./createUtils.js")
     , user = mongoose.model('User')
     , _ = require('underscore')
-    ,post =mongoose.model('bookmark')
+    , post = mongoose.model('bookmark')
+    , urlObj =mongoose.model('url')
 
   //console.log(parseUtils.parser)
   "use strict";
@@ -30,60 +31,161 @@
       if (block) q.block=block;  //limit by blocks
       if (home)  q.user=req.user 
       if (userId)  q.user=userId
-       //limit by my bookmarks for home
-     //console.
-      model
-        .find(q)
-        .populate("user", "username")
-        .populate("urlObj")
-        .populate("block")
-        .populate("blockUser", "username")
-        .sort("createdAt")
-        .lean()
-        .exec(function (err, result) {
-        if (!err) {
-          var json;
-          json=parseResults(result, req.user); //adds a myPost key for the post the user ownes
+        model
+          .find({user:req.user})
+          .populate("user", "username")
+          .populate("urlObj")
+          .populate("block")
+          .populate("blockUser", "username")
+          .lean()
+          .exec(function(err, resultUserBookmarks){
 
-          var PostQ=pullURLMongoQ(result)
-          model
-            .find(PostQ)
-            .populate("user", "username")
-            .populate("block")
-            .exec(function (err, resultPosts) {
-            finalJson=_.map(json, function(mapped){ 
-              var matched=_.filter(resultPosts, function(filter){ 
-                return String(filter.urlObj)==String(mapped.urlObj._id) &&  String(filter._id)!= String(mapped._id)
 
-              });
-              mapped.OtherBookmarkBlocks=matched;
-              return mapped; 
+            var mongo_qURL=pullURLMongoQ(resultUserBookmarks,"_id")
 
-            });
+          
+          urlObj
+            .find(mongo_qURL)
+            .sort("-lastUpdate")// This should be a s sort by modified date
+            .limit(10)
+            .lean()
+            .exec(function(err, resultUserURL){
 
-            res.send(finalJson);
+                      // for (var i = resultUserURL.length - 1; i >= 0; i--) {
+                      //   resultUserURL[i].urlMatch=true
+                      // };
+
+                      //cross filtering for rexcent updates URL
+                      var ids = {};
+                      _.each(resultUserURL, function (bb) { 
+                        ids[bb._id] = true; 
+                      });
+
+                      var out = _.filter(resultUserBookmarks, function (val) {
+                          var match=ids[val.urlObj._id];
+                          return match;
+                      }, resultUserURL);
+                      
+                      
+
+
+                      
+
+                      combinedList=out.concat(resultUserBookmarks.slice(0,10))
+
+
+                      combinedList=_.sortBy(combinedList, function(obj){ 
+                        return new Date(obj.urlObj.lastUpdate).getTime() 
+                      });
+
+
+                      combinedList=_.uniq(combinedList,function(item,key,a){
+                          return item
+                      });
+
+
+                      console.log(out.length)
+
+                      console.log(combinedList.length)
+
+                      var json;
+                      json=parseResults(combinedList, req.user); //adds a myPost key for the post the user ownes
+
+                      var PostQ=pullURLMongoQ(combinedList, "urlObj")
+                      model
+                        .find(PostQ)
+                        .populate("user", "username")
+                        .populate("block")
+                        .exec(function (err, resultPosts) {
+
+                        finalJson=_.map(json, function(mapped){ 
+                          var matched=_.filter(resultPosts, function(filter){ 
+                            return String(filter.urlObj)==String(mapped.urlObj._id) &&  String(filter._id)!= String(mapped._id)
+
+                          });
+                          mapped.OtherBookmarkBlocks=matched;
+                          return mapped; 
+
+                        });
+
+
+
+                        res.send(finalJson);
+
+                      });
+
+            })
 
           });
 
-        } else {
-          res.send(errMsg(err));
-        }
-      });
+
+
+
+//       limit by my bookmarks for home
+
+      // model
+      //   .find(q)
+      //   .populate("user", "username")
+      //   .populate("urlObj")
+      //   .populate("block")
+      //   .populate("blockUser", "username")
+      //   .sort("createdAt")
+      //   .lean()
+      //   .exec(function (err, result) {
+
+
+      //   if (!err) {
+      //     var json;
+      //     json=parseResults(result, req.user); //adds a myPost key for the post the user ownes
+
+      //     var PostQ=pullURLMongoQ(result, "urlObj")
+      //     model
+      //       .find(PostQ)
+      //       .populate("user", "username")
+      //       .populate("block")
+      //       .exec(function (err, resultPosts) {
+            
+      //       finalJson=_.map(json, function(mapped){ 
+      //         var matched=_.filter(resultPosts, function(filter){ 
+      //           return String(filter.urlObj)==String(mapped.urlObj._id) &&  String(filter._id)!= String(mapped._id)
+
+      //         });
+      //         mapped.OtherBookmarkBlocks=matched;
+      //         return mapped; 
+
+      //       });
+
+      //                  console.log(finalJson)
+
+      //       res.send(finalJson);
+
+      //     });
+
+      //   } else {
+      //     res.send(errMsg(err));
+      //   }
+
+      // });
+
+
+
     };
   }
 
-  function pullURLMongoQ(postList){
-    var array=[];
+  function pullURLMongoQ(postList, feild){
+    var array=[],mObj={};
+
+
 
     for (var i = postList.length - 1; i >= 0; i--) {
       var URLId;
       if (postList[i].urlObj._id) URLId=postList[i].urlObj._id; else URLId=postList[i].urlObj;
-      if (postList[i].totalBookmarks>1)
+//      if (postList[i].totalBookmarks>1)
        array.push(URLId)
-
     };  
 
-    return { urlObj: { $in: array } };
+    mObj[feild]={ $in: array };
+    return mObj;
 
   };
 
@@ -106,7 +208,7 @@
       if(result[i].urlObj)
         result[i].url=result[i].urlObj.url,
         result[i].title=result[i].urlObj.title;
-        result[i].totalBookmarks=result[i].urlObj.totalBookmarks;
+    //    result[i].totalBookmarks=result[i].urlObj.totalBookmarks;
       if (result[i].urlObj.favicon)
         result[i].favicon=result[i].urlObj.favicon;
 
@@ -122,7 +224,7 @@
     return function (req, res) {
       var m = new model(req.body), urlString=req.body.url;
 
-      createUtils.url(urlString, function(err, urlObj){
+      createUtils.url(urlString,req.user, function(err, urlObj){
 
 
             parseUtils.parser(urlString, urlObj, function(err, urlObj){
@@ -132,7 +234,7 @@
 
                 m.urlObj=urlObj, m.block=blockObj,m.user=req.user, m.blockUser=blockObj.user;
 
-                model
+                model//find other people who have 
                   .find({urlObj:urlObj})
                   .populate("user", "username")
                   .populate("block")

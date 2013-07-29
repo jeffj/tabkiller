@@ -6,7 +6,7 @@ var mongoose = require('mongoose')
     , canconicalURL=parseUtil.canconicalURL;
 
 
-exports.url=function(url, cb){
+exports.url=function(url,user,cb){
     //here we check to see if the url has already been parsed.  Has the work already been done is the?
     var urlObj;
     urlParseObj=parseURI(url);
@@ -16,14 +16,16 @@ exports.url=function(url, cb){
       if (err){ cb(err, null); return false};
 
 
-      // if (responseURL==null)
-      //   cb(null, responseURL); 
-      // else{
-     // responseURL.totalBookmarks+=1
-       // responseURL.save(function(){
+      if (responseURL==null)
+        cb(null, responseURL); 
+      else{
+       responseURL.lastUpdate=Date.now();
+       responseURL.lastUpdateUser=user.username
+
+       responseURL.save(function(){
           cb(null, responseURL); 
-       // })
-     // };
+       })
+     };
     });
 }
 

@@ -191,9 +191,19 @@ $(function ($, _, Backbone) {
 
             // , _id : String(Math.random()*100000000000000000)
 
+
+
       var JSON=this.model.toJSON()
       if (!JSON._id) JSON._id=String(Math.random()*100000000000000000)
+
+      JSON.userdisplay=false
       JSON.timeAgo=$.timeago(this.model.get("createdAt"))
+      if (this.model.get("urlObj")!=undefined &&  this.model.get("urlObj").lastUpdate!=null){
+      JSON.timeAgo=$.timeago( this.model.get("urlObj").lastUpdate )
+      JSON.userdisplay=this.model.get("urlObj").lastUpdateUser
+      }
+
+
       this.$el.html(this.template(JSON));
       this.input = this.$('.edit');
       this.bodyEdit = this.$(".title-edit")

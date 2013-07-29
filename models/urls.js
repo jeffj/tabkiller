@@ -6,6 +6,9 @@ var mongoose = require('mongoose')
        , url: { 'type': String, 'default': '' }
        , title: { 'type': String ,'default': ''}
        , favicon: { 'type': String ,'default': ''}
+      , lastUpdate : {type : Date, default : null}
+      , lastUpdateUser: { 'type': String ,'default': ''}
+
   });
 
 

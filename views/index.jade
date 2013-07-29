@@ -72,8 +72,11 @@ block bodyscripts
     |   </div> 
     | <% } %>
     |  <a class="menu" data-dropdown="#dropdown-<%= _id %>" href="#"><i style=""class="icon-sort-down"></i></i><a/>
-    |  <span> | <%= timeAgo %> </span>  
-    |  <a href="/user/<%= user.username %>"> | <%= user.username %></a>  
+    |  <span> | <%= timeAgo %> </span> 
+    |  <a href="/user/<%= user.username %>"> | <%= user.username %></a>
+    | <% if (userdisplay && userdisplay!=user.username) { %>
+    |  & <b> <a href="/user/<%= userdisplay %>"> <%= userdisplay %></a>   </b>
+    | <% } %>  
     |  <div  id="dropdown-<%= _id %>" class="dropdown dropdown-tip">
     |   <ul class="dropdown-menu">
     |    <li> <a class="edit" href="javascript:;" class="destroy"><i class="icon-edit"></i></a></li>
