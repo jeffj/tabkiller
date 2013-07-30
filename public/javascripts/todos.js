@@ -176,7 +176,13 @@ $(function ($, _, Backbone, PostKeen) {
        "click .edit"  : "edit",
        "click a.destroy" : "clear",
        "click .submit-update"  : "update",
+       "click .ext-link": "keenhref"
       // "click .menu" : "menu"
+    },
+    keenhref:function(e){
+
+      Keen.trackExternalLink(this, 'index', {'location' :this.$(".ext-link").attr("href"), username:username});
+
     },
     // menu:function(e){
     //   var that=this;
