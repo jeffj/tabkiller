@@ -36,6 +36,8 @@ module.exports = function (passport, config) {
         if (!user.authenticate(password)) {
           return done(null, false, { message: 'Invalid password' })
         }
+        user.lastLogin=Date();
+        user.save();
         return done(null, user)
       })
     }

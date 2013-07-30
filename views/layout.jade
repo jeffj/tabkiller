@@ -17,4 +17,16 @@ html
         script(type="text/javascript", src="https://cdn.firebase.com/v0/firebase.js")
 
 
-        block bodyscripts
+
+
+
+        script(type='text/javascript')
+            var Keen=Keen||{configure:function(e){this._cf=e},addEvent:function(e,t,n,i){this._eq=this._eq||[],this._eq.push([e,t,n,i])},setGlobalProperties:function(e){this._gp=e},onChartsReady:function(e){this._ocrq=this._ocrq||[],this._ocrq.push(e)}};(function(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src=("https:"==document.location.protocol?"https://":"http://")+"dc8na2hxrj29i.cloudfront.net/code/keen-2.1.0-min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})();
+              // Configure the Keen object with your Project ID and (optional) access keys.
+              Keen.configure({
+              projectId: "51666b413843317cd4000002",
+              writeKey: "03b497ffc5bbd875a5f01b027a3397114ed0c9d540f584a82053ec271b8633ccc152965738bb3572d51efa6cc10c2007471fa68651f0122a4b255ab8f0c015913226629c9e35c65180b493e1d5e30d76b214f2a04efc178dfe84cb308884e241a1c0685dd9145539a617d6bb53ec1db2", // required for sending events
+              readKey: "8cf99a87190b776d63e51b0e36fa38d5fc74b2440d2c765a56b462488fa32904d852459099b8b4fb1e35f3ecb05cd67a119748583697cd2f463ce822140ab96933c6e520dbebd489c01cd94052e9968f4c57c6839b00fbc87465f0123cb93f88e6972e17c3f59c6d79a35e1b90bf4457"    // required for doing analysis
+              });
+
+        block bodyscripts 

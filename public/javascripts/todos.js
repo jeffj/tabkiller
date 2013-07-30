@@ -3,8 +3,27 @@ holder.ondragover = function () { this.className = 'hover'; return false; };
 holder.ondragend = function () { this.className = ''; return false; };
 holder.ondrop = function (e) { e.preventDefault(); return false; };
 
+var post = function (url, bucket) {
+    // create an event as a JS object
 
-$(function ($, _, Backbone) {
+    if (username=="")
+      username=null
+
+    var post = {
+        username: username,
+        location: window.location.href,
+        url: url,
+        bucket:bucket
+
+    };
+
+    // add it to the "purchases" collection
+    Keen.addEvent("post", post);
+};
+
+$(function ($, _, Backbone, PostKeen) {
+
+
 
   "use strict";
 
@@ -374,6 +393,7 @@ $(function ($, _, Backbone) {
           , totalBookmarks : 1
 
         });
+      PostKeen(this.inputUrl.val(),blockVal)
       this.inputUrl.val("")
     }
     // toggleAllComplete: function () {
@@ -397,4 +417,5 @@ $(function ($, _, Backbone) {
 
   });
 
-}(jQuery, _, Backbone));
+}(jQuery, _, Backbone, post));
+
