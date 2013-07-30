@@ -59,13 +59,30 @@ exports.session = function (req, res) {
  * Create user
  */
 
- exports.changepw=function(){
+ exports.changepw=function(req, res){
 
-  console.log( req.param("email") )
+  console.log( req.param("user") )
+
+
 
   User
-    .findOne({username:req.body.username})
+    .findOne({username:req.param("user")})
     .exec(function(err, result){
+
+      console.log(result)
+
+      if (result!=null && req.param("newpass"))
+        result.password=req.param("newpass"),
+        result.save(function(err, result){
+
+        res.send(err)
+
+
+       });
+       else
+        res.send("fail")
+
+
 
 
 

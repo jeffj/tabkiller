@@ -25,6 +25,27 @@
       });
   }
 
+  // function useremail(req, res) {
+  //       console.log(req.param("user"))
+
+
+  //   usermodel
+  //   .findOne({username:req.param("user")})
+  //   .exec(function(err,result){
+
+
+  //       console.log(req.param("user"))
+
+  //       res.send(result)
+
+  //       result.
+
+
+
+  //   });
+
+  // }
+
   function bucket(req, res) {
     var blockId=req.path.replace(/^\/|\/$/g, '')
     res.render('index', { 
@@ -89,11 +110,16 @@
 
     app.get('/public',publicRes);
 
+    app.get("/emailchange",users.changepw)
+
     app.get('/:blockid',bucket);
     app.param('blockid', blockid)
 
 
     app.get('/user/:userid',user);
     app.param('userid', userid)
+
+
+
   };
 }(exports));
