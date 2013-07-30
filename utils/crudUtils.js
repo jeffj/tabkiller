@@ -31,7 +31,7 @@
         .populate("user", "username")
         .populate("urlObj")
         .populate("block")
-        .sort("createdAt")
+        .sort("-createdAt")
         .lean()
         .exec(function (err, result) {
         if (!err) {
