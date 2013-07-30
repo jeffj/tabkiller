@@ -59,9 +59,35 @@ exports.session = function (req, res) {
  * Create user
  */
 
+ exports.changepw=function(){
+
+  console.log( req.param("email") )
+
+  User
+    .findOne({username:req.body.username})
+    .exec(function(err, result){
+
+
+
+
+    })
+
+ }
+
 exports.create = function (req, res) {
   var user = new User(req.body)
   user.provider = 'local'
+
+  console.log(req.body.username)
+  User
+    .findOne({username:req.body.username})
+    .exec(function(err, result){
+
+
+      if (result!=null){  res.render('users/signup', { errors: [{type:"Username Taken"}], user: user }); return}
+
+
+   
   user.save(function (err) {
     if (err) {
       return res.render('users/signup', { errors: err.errors, user: user })
@@ -71,6 +97,7 @@ exports.create = function (req, res) {
       return res.redirect('/')
     })
   })
+   });
 }
 
 /**
