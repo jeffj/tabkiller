@@ -37,7 +37,7 @@
           .populate("urlObj")
           .populate("block")
           .populate("blockUser", "username")
-          .sort("-createdAt")
+          .sort("createdAt")
           .lean()
           .exec(function(err, resultUserBookmarks){
 
