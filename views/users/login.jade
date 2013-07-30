@@ -4,7 +4,7 @@ block auth
   form.login.form-horizontal(action="/users/session", method="post")
     p.error= message
     .control-group
-      label.control-label(for='email') Email
+      label.control-label(for='email') Username
       .controls
         input#email(type='text', name="email", placeholder='Email')
 
